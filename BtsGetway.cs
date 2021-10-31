@@ -58,11 +58,13 @@ namespace BtsGetwayService
                     foreach (var site in lstSite)
                     {
                         var tocDoGioGiatByDevice = _reportDailyTocDoGioData.GetTocDoGioLatest(site.DeviceId.Value);
-                        string valueHuongGio = "0", valueTocDoGio = "0";
+                        string valueHuongGio2m = "0", valueTocDoGio2m = "0", valueHuongGio2s="0", valueTocDoGio2s="0";
                         if (tocDoGioGiatByDevice != null)
                         {
-                            valueTocDoGio = tocDoGioGiatByDevice.TocDoGioLonNhat.HasValue ? tocDoGioGiatByDevice.TocDoGioLonNhat.Value.ToString() : "0";
-                            valueHuongGio = tocDoGioGiatByDevice.HuongGioCuaTocDoLonNhat.HasValue ? tocDoGioGiatByDevice.HuongGioCuaTocDoLonNhat.Value.ToString() : "0";
+                            valueTocDoGio2m = tocDoGioGiatByDevice.TocDoGioLonNhat.HasValue ? tocDoGioGiatByDevice.TocDoGioLonNhat.Value.ToString() : "0";
+                            valueHuongGio2m = tocDoGioGiatByDevice.HuongGioCuaTocDoLonNhat.HasValue ? tocDoGioGiatByDevice.HuongGioCuaTocDoLonNhat.Value.ToString() : "0";
+                            valueTocDoGio2s = tocDoGioGiatByDevice.TocDoGioNhoNhat.HasValue ? tocDoGioGiatByDevice.TocDoGioNhoNhat.Value.ToString() : "0";
+                            valueHuongGio2s = tocDoGioGiatByDevice.HuongGioCuarTocDoNhoNhat.HasValue ? tocDoGioGiatByDevice.HuongGioCuarTocDoNhoNhat.Value.ToString() : "0";
                         }
                         try
                         {
@@ -74,22 +76,24 @@ namespace BtsGetwayService
                                 {
                                     ModelFileTramKhiTuongJson dataOfSite = new ModelFileTramKhiTuongJson();
                                     dataOfSite.StationNo = site.DeviceId.ToString();
-                                    dataOfSite.Datadate = long.Parse(helperUlti.DatetimeOnlyNumber(obs.DateCreate));
-                                    dataOfSite.DD10m = float.Parse(valueHuongGio);
-                                    dataOfSite.FF10m = float.Parse(obs.BWS.ToString());
+                                    dataOfSite.Datadate = long.Parse(helperUlti.DatetimeOnlyNumber(to));
+                                    dataOfSite.DD10m = float.Parse(valueHuongGio2m);
+                                    dataOfSite.FF10m = float.Parse(valueTocDoGio2m);
                                     dataOfSite.T2m = float.Parse(obs.BTI.ToString());
                                     dataOfSite.Rh2m = float.Parse(obs.BHU.ToString());
-                                    dataOfSite.DxDx = float.Parse(obs.BAP.ToString());
-                                    dataOfSite.FxFx = float.Parse(valueTocDoGio);
+                                    dataOfSite.DxDx = float.Parse(valueHuongGio2s);
+                                    dataOfSite.FxFx = float.Parse(valueTocDoGio2s);
                                     dataOfSite.Rain24h = float.Parse(obs.BAC.ToString());
                                     dataOfSite.PS = float.Parse(obs.BAV.ToString());
+                                    dataOfSite.FTFT = float.Parse(obs.BWS.ToString());
+                                    dataOfSite.DTDT = float.Parse(obs.BAP.ToString());
                                     dataTramKhiTuong.Add(dataOfSite);
                                 }
                                 else
                                 {
                                     ModelFileTramThuyVanJson dataOfSite = new ModelFileTramThuyVanJson();
                                     dataOfSite.StationNo = site.DeviceId.ToString();
-                                    dataOfSite.Datadate = long.Parse(helperUlti.DatetimeOnlyNumber(obs.DateCreate));
+                                    dataOfSite.Datadate = long.Parse(helperUlti.DatetimeOnlyNumber(to));
                                     dataOfSite.WL = float.Parse(obs.BAF.ToString());
                                     dataTramThuyVan.Add(dataOfSite);
                                 }

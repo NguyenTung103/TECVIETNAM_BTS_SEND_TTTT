@@ -46,7 +46,15 @@ namespace BtsGetwayService.Model
         /// <summary>
         /// Lượng mưa 24h
         /// </summary>
-        public float Rain24h { get; set; }        
+        public float Rain24h { get; set; }   
+        /// <summary>
+        /// Tốc độ gió BWS
+        /// </summary>
+        public float FTFT { get; set; }  
+        /// <summary>
+        /// Hướng gió BAP
+        /// </summary>
+        public float DTDT { get; set; }        
     }
     public class ModelFileTramThuyVanJson
     {
