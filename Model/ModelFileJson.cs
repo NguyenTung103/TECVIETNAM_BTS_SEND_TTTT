@@ -5,7 +5,7 @@ using System.Text;
 namespace BtsGetwayService.Model
 {
 
-    public class ModelFileJson
+    public class ModelFileTramKhiTuongJson
     {
         /// <summary>
         /// ID Trạm
@@ -30,50 +30,37 @@ namespace BtsGetwayService.Model
         /// <summary>
         /// Tốc độ gió giật
         /// </summary>
-        public float FxFx { get; set; }
-        /// <summary>
-        /// Mực nước
-        /// </summary>
-        public float WL { get; set; }
+        public float FxFx { get; set; }       
         /// <summary>
         /// Nhiệt độ không khí
         /// </summary>
-        public float T2m { get; set; }
-        /// <summary>
-        /// Nhiệt độ điểm sương
-        /// </summary>
-        public float Td2m { get; set; }
+        public float T2m { get; set; }        
         /// <summary>
         /// Độ ẩm tương đối
         /// </summary>
-        public float Rh2m { get; set; }
+        public float Rh2m { get; set; }                
+        ///// <summary>
+        ///// Khí áp mực trạm
+        ///// </summary>
+        //public float PS { get; set; }               
         /// <summary>
-        /// Nhiệt độ đất
+        /// Lượng mưa 24h
         /// </summary>
-        public float Tg { get; set; }
+        public float Rain24h { get; set; }        
+    }
+    public class ModelFileTramThuyVanJson
+    {
         /// <summary>
-        /// Nhiệt độ nước
+        /// ID Trạm
         /// </summary>
-        public float Tw { get; set; }
+        public string StationNo { get; set; }
         /// <summary>
-        /// Khí áp mực trạm
+        /// Ngày gửi
         /// </summary>
-        public float PS { get; set; }
+        public long Datadate { get; set; }      
         /// <summary>
-        /// Khí áp trung bình mực biển
+        /// Mực nước
         /// </summary>
-        public float PMSL { get; set; }
-        /// <summary>
-        /// Lượng mưa 10 phút qua
-        /// </summary>
-        public float Rain10m { get; set; }
-        /// <summary>
-        /// Lượng mưa 1 giờ qua
-        /// </summary>
-        public float Rain1h { get; set; }
-        /// <summary>
-        /// Ngày 
-        /// </summary>
-        public long Year { get; set; }
+        public float WL { get; set; }           
     }
 }

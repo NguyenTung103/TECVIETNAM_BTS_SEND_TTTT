@@ -11,6 +11,10 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Serilog;
+using System.Text.Json;
 
 namespace BtsGetwayService
 {
@@ -19,7 +23,6 @@ namespace BtsGetwayService
         public readonly Timer _timer;
         GroupData _groupData = new GroupData();
         SiteData _siteData = new SiteData();
-        ReportDailyHuongGioData _reportDailyHuongGioData = new ReportDailyHuongGioData();
         ReportDailyTocDoGioData _reportDailyTocDoGioData = new ReportDailyTocDoGioData();
         DataObservationMongoService dataObservationMongoService = new DataObservationMongoService();
         Helper helperUlti = new Helper();
@@ -47,14 +50,13 @@ namespace BtsGetwayService
             string appConfigFolderTTTT = ConfigurationManager.AppSettings["FolderTrungTamThongTin"].ToString();
             foreach (var grp in lstGroup)
             {
-                List<ModelFileJson> dataTramKhiTuong = new List<ModelFileJson>();
-                List<ModelFileJson> dataTramThuyVan = new List<ModelFileJson>();
+                List<ModelFileTramKhiTuongJson> dataTramKhiTuong = new List<ModelFileTramKhiTuongJson>();
+                List<ModelFileTramThuyVanJson> dataTramThuyVan = new List<ModelFileTramThuyVanJson>();
                 try
                 {
                     List<Site> lstSite = _siteData.GetListSite(grp.Id).ToList();
                     foreach (var site in lstSite)
                     {
-                        string content = "";
                         var tocDoGioGiatByDevice = _reportDailyTocDoGioData.GetTocDoGioLatest(site.DeviceId.Value);
                         string valueHuongGio = "0", valueTocDoGio = "0";
                         if (tocDoGioGiatByDevice != null)
@@ -68,36 +70,27 @@ namespace BtsGetwayService
                             obs = dataObservationMongoService.GetDataPagingByDeviceId(from, to, site.DeviceId.Value, 0, 1, out int total).FirstOrDefault();
                             if (obs != null)
                             {
-                                ModelFileJson dataOfSite = new ModelFileJson();
-                                dataOfSite.StationNo = site.DeviceId.ToString();
-                                dataOfSite.Datadate = long.Parse(helperUlti.DatetimeOnlyNumber(obs.DateCreate));
                                 if (site.TypeSiteId == 1)
                                 {
+                                    ModelFileTramKhiTuongJson dataOfSite = new ModelFileTramKhiTuongJson();
+                                    dataOfSite.StationNo = site.DeviceId.ToString();
+                                    dataOfSite.Datadate = long.Parse(helperUlti.DatetimeOnlyNumber(obs.DateCreate));
                                     dataOfSite.DD10m = float.Parse(valueHuongGio);
-                                    dataOfSite.FF10m = float.Parse(valueTocDoGio);
+                                    dataOfSite.FF10m = float.Parse(obs.BWS.ToString());
                                     dataOfSite.T2m = float.Parse(obs.BTI.ToString());
                                     dataOfSite.Rh2m = float.Parse(obs.BHU.ToString());
                                     dataOfSite.DxDx = float.Parse(obs.BAP.ToString());
-                                    dataOfSite.FxFx = float.Parse(obs.BWS.ToString());
+                                    dataOfSite.FxFx = float.Parse(valueTocDoGio);
+                                    dataOfSite.Rain24h = float.Parse(obs.BAC.ToString());
                                     dataTramKhiTuong.Add(dataOfSite);
-                                    content = helperUlti.DatetimeOnlyNumber(obs.DateCreate)
-                                       + "#" + obs.Device_Id
-                                       + "#" + obs.BTI
-                                       + "#" + obs.BAP
-                                       + "#" + obs.BWS
-                                       + "#" + valueHuongGio
-                                       + "#" + valueTocDoGio
-                                       + "#" + obs.BAC
-                                       + "#" + obs.BAV
-                                       + "#0" + "#0" + "#" + obs.BHU + "#0" + "#" + obs.BAF + "#################################0#0#00#0#0#0#0#0#0#0#0#1#0#0#0#1#0#0#0#0#0#0#0####";
                                 }
                                 else
                                 {
+                                    ModelFileTramThuyVanJson dataOfSite = new ModelFileTramThuyVanJson();
+                                    dataOfSite.StationNo = site.DeviceId.ToString();
+                                    dataOfSite.Datadate = long.Parse(helperUlti.DatetimeOnlyNumber(obs.DateCreate));
                                     dataOfSite.WL = float.Parse(obs.BAF.ToString());
                                     dataTramThuyVan.Add(dataOfSite);
-                                    content = helperUlti.DatetimeOnlyNumber(obs.DateCreate)
-                                       + "#" + obs.Device_Id
-                                       + "#0#0#0#0#0#0#0#0#0#0#0#" + obs.BAF + "#################################0#0#00#0#0#0#0#0#0#0#0#1#0#0#0#1#0#0#0#0#0#0#0####";
                                 }
                             }
 
@@ -105,7 +98,7 @@ namespace BtsGetwayService
                         }
                         catch (Exception ex)
                         {
-                            //Log.Info("Nhóm: " + grp.Id + "Trạm: " + site.Id + ": ERROR " + ex);                           
+
                         }
 
                     }
@@ -121,62 +114,71 @@ namespace BtsGetwayService
                 if (dataTramKhiTuong != null && dataTramKhiTuong.Count() > 0)
                 {
                     string nameFile = grp.Code + "_AWS_" + helperUlti.DatetimeOnlyNumber(to) + ".json";
-
                     string path = urlFullPathFolder + nameFile;
-                    // Create a file to write to.
-                    using (StreamWriter sw = File.CreateText(path))
+                    try
                     {
-
-                        JsonSerializer serializer = new JsonSerializer();
-                        //serialize object directly into file stream
-                        serializer.Serialize(sw, dataTramKhiTuong);
-                        string From = path;
-                        //string pathCreateFolder1 = "/ODA-KOREA" + "/" + to.ToString("dd-MM-yyyy");
-                        //string pathCreateFolder2 = "/ODA-KOREA" + "/" + to.ToString("dd-MM-yyyy") + "/" + helperUlti.CreateTitle(site.Name);
-                        //GetOrCreateFolder(host + pathCreateFolder1);                       
-                        string To = host + appConfigFolderTTTT + "/" + helperUlti.GetDay(to) + "/";
-                        GetOrCreateFolder(To);
-                        using (WebClient client = new WebClient())
+                        var options = new JsonSerializerOptions { WriteIndented = true };
+                        string jsonString = System.Text.Json.JsonSerializer.Serialize(dataTramKhiTuong, options);
+                        // Create a new file                         
+                        if (!File.Exists(path))
                         {
-                            client.Credentials = new NetworkCredential(userName, password);
-                            client.UploadFile(To + nameFile, WebRequestMethods.Ftp.UploadFile, From);
+                            File.WriteAllText(path, jsonString);
                         }
                     }
+                    catch (Exception)
+                    {
+
+                    }
+                    try
+                    {
+                        GetOrCreateFolder(appConfigFolderTTTT, to, nameFile, path);
+                    }
+                    catch(Exception)
+                    {
+
+                    }
+                    
                 }
                 if (dataTramThuyVan != null && dataTramThuyVan.Count() > 0)
                 {
-                    string nameFile = grp.Code + "_WL_" + helperUlti.DatetimeOnlyNumber(to) + ".json";                   
+                    string nameFile = grp.Code + "_WL_" + helperUlti.DatetimeOnlyNumber(to) + ".json";
                     string path = urlFullPathFolder + nameFile;
-                    // Create a file to write to.
-                    using (StreamWriter sw = File.CreateText(path))
-                    {                        
+                    try
+                    {
+                        var options = new JsonSerializerOptions { WriteIndented = true };
+                        string jsonString = System.Text.Json.JsonSerializer.Serialize(dataTramThuyVan, options);
                         if (!File.Exists(path))
                         {
-                            JsonSerializer serializer = new JsonSerializer();
-                            //serialize object directly into file stream
-                            serializer.Serialize(sw, dataTramThuyVan);
-                            string From = path;
-                            //string pathCreateFolder1 = "/ODA-KOREA" + "/" + to.ToString("dd-MM-yyyy");
-                            //string pathCreateFolder2 = "/ODA-KOREA" + "/" + to.ToString("dd-MM-yyyy") + "/" + helperUlti.CreateTitle(site.Name);
-                            //GetOrCreateFolder(host + pathCreateFolder1);                       
-                            string To = host + appConfigFolderTTTT + "/" + helperUlti.GetDay(to) + "/";
-                            GetOrCreateFolder(To);
-                            using (WebClient client = new WebClient())
-                            {
-                                client.Credentials = new NetworkCredential(userName, password);
-                                client.UploadFile(To + nameFile, WebRequestMethods.Ftp.UploadFile, From);
-                            }
+                            File.WriteAllText(path, jsonString);
                         }
                     }
+                    catch (Exception)
+                    {
+
+                    }
+                    try
+                    {
+                        GetOrCreateFolder(appConfigFolderTTTT, to, nameFile, path);
+                    }
+                    catch (Exception)
+                    {
+
+                    }
                 }
-            }            
+            }
         }
-        private void GetOrCreateFolder(string url)
+        private void GetOrCreateFolder(string folderTTTT, DateTime to, string fileName, string fullPathSourceFile)
         {
-            bool checkExisFolder = DoesFtpDirectoryExist(url);
+            string urlFolder = host + folderTTTT + "/" + helperUlti.GetDay(to) + "/";
+            bool checkExisFolder = DoesFtpDirectoryExist(urlFolder);
             if (checkExisFolder == false)
             {
-                bool check = CreateFTPDirectory(url);
+                bool check = CreateFTPDirectory(urlFolder);
+            }
+            using (WebClient client = new WebClient())
+            {
+                client.Credentials = new NetworkCredential(userName, password);
+                client.UploadFile(urlFolder + fileName, WebRequestMethods.Ftp.UploadFile, fullPathSourceFile);
             }
         }
         private bool CreateFile(string path)

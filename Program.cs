@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using System;
 using Topshelf;
 
 namespace BtsGetwayService
@@ -6,7 +8,11 @@ namespace BtsGetwayService
     class Program
     {        
         static void Main(string[] args)
-        {     
+        {
+            var services = new ServiceCollection();
+            ConfigureServices(services);
+            ServiceProvider serviceProvider = services.BuildServiceProvider();
+            serviceProvider.GetService<BtsGetway>();
             var exitCode = HostFactory.Run(x => // Setup các thông tin cần thiết
             {
                 x.Service<BtsGetway>(s => // Khai báo các callBack
@@ -24,6 +30,11 @@ namespace BtsGetwayService
             });
             int exitCodeValue = (int)Convert.ChangeType(exitCode, exitCode.GetTypeCode());
             Environment.ExitCode = exitCodeValue;
+        }
+        private static void ConfigureServices(ServiceCollection services)
+        {
+            services.AddLogging(configure => configure.AddConsole())
+            .AddTransient<BtsGetway>();
         }
     }
 }
