@@ -38,11 +38,11 @@ namespace BtsGetwayService.Model
         /// <summary>
         /// Độ ẩm tương đối
         /// </summary>
-        public float Rh2m { get; set; }                
-        ///// <summary>
-        ///// Khí áp mực trạm
-        ///// </summary>
-        //public float PS { get; set; }               
+        public float Rh2m { get; set; }
+        /// <summary>
+        /// Khí áp mực trạm
+        /// </summary>
+        public float PS { get; set; }
         /// <summary>
         /// Lượng mưa 24h
         /// </summary>

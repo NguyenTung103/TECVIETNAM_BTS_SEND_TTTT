@@ -82,6 +82,7 @@ namespace BtsGetwayService
                                     dataOfSite.DxDx = float.Parse(obs.BAP.ToString());
                                     dataOfSite.FxFx = float.Parse(valueTocDoGio);
                                     dataOfSite.Rain24h = float.Parse(obs.BAC.ToString());
+                                    dataOfSite.PS = float.Parse(obs.BAV.ToString());
                                     dataTramKhiTuong.Add(dataOfSite);
                                 }
                                 else
