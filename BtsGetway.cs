@@ -61,10 +61,10 @@ namespace BtsGetwayService
                         string valueHuongGio2m = "0", valueTocDoGio2m = "0", valueHuongGio2s="0", valueTocDoGio2s="0";
                         if (tocDoGioGiatByDevice != null)
                         {
-                            valueTocDoGio2m = tocDoGioGiatByDevice.TocDoGioLonNhat.HasValue ? tocDoGioGiatByDevice.TocDoGioLonNhat.Value.ToString() : "0";
-                            valueHuongGio2m = tocDoGioGiatByDevice.HuongGioCuaTocDoLonNhat.HasValue ? tocDoGioGiatByDevice.HuongGioCuaTocDoLonNhat.Value.ToString() : "0";
-                            valueTocDoGio2s = tocDoGioGiatByDevice.TocDoGioNhoNhat.HasValue ? tocDoGioGiatByDevice.TocDoGioNhoNhat.Value.ToString() : "0";
-                            valueHuongGio2s = tocDoGioGiatByDevice.HuongGioCuarTocDoNhoNhat.HasValue ? tocDoGioGiatByDevice.HuongGioCuarTocDoNhoNhat.Value.ToString() : "0";
+                            valueTocDoGio2s = tocDoGioGiatByDevice.TocDoGioLonNhat.HasValue ? tocDoGioGiatByDevice.TocDoGioLonNhat.Value.ToString() : "0";
+                            valueHuongGio2s = tocDoGioGiatByDevice.HuongGioCuaTocDoLonNhat.HasValue ? tocDoGioGiatByDevice.HuongGioCuaTocDoLonNhat.Value.ToString() : "0";
+                            valueTocDoGio2m = tocDoGioGiatByDevice.TocDoGioNhoNhat.HasValue ? tocDoGioGiatByDevice.TocDoGioNhoNhat.Value.ToString() : "0";
+                            valueHuongGio2m = tocDoGioGiatByDevice.HuongGioCuarTocDoNhoNhat.HasValue ? tocDoGioGiatByDevice.HuongGioCuarTocDoNhoNhat.Value.ToString() : "0";
                         }
                         try
                         {
@@ -130,7 +130,7 @@ namespace BtsGetwayService
                             File.WriteAllText(path, jsonString);
                         }
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
 
                     }
@@ -138,7 +138,7 @@ namespace BtsGetwayService
                     {
                         GetOrCreateFolder(appConfigFolderTTTT, to, nameFile, path);
                     }
-                    catch(Exception)
+                    catch(Exception ex)
                     {
 
                     }
@@ -157,7 +157,7 @@ namespace BtsGetwayService
                             File.WriteAllText(path, jsonString);
                         }
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
 
                     }
@@ -165,7 +165,7 @@ namespace BtsGetwayService
                     {
                         GetOrCreateFolder(appConfigFolderTTTT, to, nameFile, path);
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
 
                     }
