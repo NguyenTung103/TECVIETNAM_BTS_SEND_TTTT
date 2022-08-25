@@ -1,0 +1,10 @@
+﻿{
+  "profiles": {
+    "BtsS10SendTTTT": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
