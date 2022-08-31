@@ -30,12 +30,14 @@ namespace GetDataByMonth
                     services.AddSingleton<IGroupData, GroupData>();
                     services.AddSingleton<IReportDailyHuongGioData, ReportDailyHuongGioData>();
                     services.AddSingleton<IReportDailyTocDoGioData, ReportDailyTocDoGioData>();
+                    services.AddSingleton<IReportS10Data, ReportS10Data>();
                     services.AddSingleton<ISiteData, SiteData>();
                     services.AddSingleton<IDataAlarmData, DataAlarmData>();
                     services.AddSingleton<IDataObservationMongoData, DataObservationMongoData>();
                     services.AddSingleton<IDataAlarmService, DataAlarmMongoService>();
                     services.AddSingleton<IDataObservationService, DataObservationMongoService>();
                     services.AddTransient<BtsGetway>();
+                    services.AddTransient<BtsGatewayS10>();
                     services.AddHostedService<Worker>();
                 })
                 .UseWindowsService();

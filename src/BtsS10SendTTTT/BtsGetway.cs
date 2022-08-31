@@ -57,9 +57,11 @@ namespace BtsGetwayService
                 string host = grp.FtpIp.Trim();
                 if (!string.IsNullOrEmpty(userName) && !string.IsNullOrEmpty(password) && !string.IsNullOrEmpty(host))
                 {
-                    List<ModelFileS10Json> dataTramKhiTuong = new List<ModelFileS10Json>();
+                    var dateTimeStr = "";
+                    List <ModelFileS10Json> dataTramKhiTuong = new List<ModelFileS10Json>();
                     try
                     {
+                        
                         var reportS10ByDevice = _reportS10Data.GetByTime(from, to);
                         foreach (var item in reportS10ByDevice)
                         {
@@ -84,6 +86,7 @@ namespace BtsGetwayService
                             modelFileS10Json.Rain00h = item.MRB.Value;
                             modelFileS10Json.Battery = item.MVC.Value;
                             dataTramKhiTuong.Add(modelFileS10Json);
+                            dateTimeStr = modelFileS10Json.Datadate.ToString();
                         }
                     }
                     catch (Exception ex)
@@ -96,7 +99,7 @@ namespace BtsGetwayService
                         Directory.CreateDirectory(urlFullPathFolder);
                     if (dataTramKhiTuong != null && dataTramKhiTuong.Count() > 0)
                     {
-                        string nameFile = grp.Code + "_AWS_" + helperUlti.DatetimeOnlyNumber(to) + ".json";
+                        string nameFile = grp.Code + "_AWS_" + dateTimeStr + ".json";
                         string path = urlFullPathFolder + nameFile;
                         try
                         {
@@ -114,7 +117,7 @@ namespace BtsGetwayService
                         }
                         try
                         {
-                            // GetOrCreateFolder(appConfigFolderTTTT, to, nameFile, path, userName, password, host);
+                            GetOrCreateFolder(appConfigFolderTTTT, to, nameFile, path, userName, password, host);
                         }
                         catch (Exception ex)
                         {
