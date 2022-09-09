@@ -9,7 +9,7 @@ namespace Core.MSSQL.Responsitory.Interface
 {
     public interface IReportS10Data : IDapperBaseData<ReportS10>
     {
-        IEnumerable<ReportS10> GetByTime(DateTime from, DateTime to);
+        IEnumerable<ReportS10> GetByTime(DateTime from, DateTime to, int deviceId);
         ReportS10 GetLatest(int deviceId);
     }
 }

@@ -18,15 +18,15 @@ namespace bts.udpgateway
         {
 
         }
-        public IEnumerable<ReportS10> GetByTime(DateTime from, DateTime to)
+        public IEnumerable<ReportS10> GetByTime(DateTime from, DateTime to, int deviceId)
         {
             string dateFrom = from.ToString("yyyy-MM-dd HH:mm:ss");
             string dateTo = to.AddMinutes(-1).ToString("yyyy-MM-dd HH:mm:ss");
             string query = string.Format(@"select * from ReportS10 r
                                             join Site s on r.DeviceId = s.DeviceId
-                                            where DateCreate between '{0}' and '{1}' and s.IsActive=1 ", dateFrom, dateTo);
+                                            where DateCreate between '{0}' and '{1}' and s.IsActive=1 and r.DeviceId = {2} ", dateFrom, dateTo, deviceId);
             return Query<ReportS10>(query, null);
-        }        
+        }
         public ReportS10 GetLatest(int deviceId)
         {
             string query = string.Format(@"select top 1 * from ReportS10 where DeviceId = {0}

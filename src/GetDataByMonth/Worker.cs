@@ -29,12 +29,15 @@ namespace GetDataByMonth
             Console.WriteLine("Enter month : ");
             var monthStr = Console.ReadLine();
             int month = Int32.Parse(monthStr);
+            Console.WriteLine("Enter day : ");
+            var dayStr = Console.ReadLine();
+            int day = Int32.Parse(dayStr);
             Console.WriteLine("Type data (1: Report_S10, 2: Report_Normal)");
             var typeReportStr = Console.ReadLine();
             int typeReport = Int32.Parse(typeReportStr);
             _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
             if (typeReport != 0 && typeReport == 1)
-                _btsGatewayS10.SendFile(year, month);
+                _btsGatewayS10.SendFile(year, month, day);
             else if (typeReport != 0 && typeReport == 2)
                 _btsGetway.SendFile(year, month);
             _logger.LogInformation("Worker finished at: {time}", DateTimeOffset.Now);
