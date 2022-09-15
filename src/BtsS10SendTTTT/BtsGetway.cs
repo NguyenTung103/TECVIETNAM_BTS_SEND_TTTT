@@ -20,6 +20,7 @@ using Microsoft.Extensions.Options;
 using Core.Setting;
 using BtsGetwayService.Interface;
 using Core.Logging;
+using Core.Model;
 
 namespace BtsGetwayService
 {
@@ -57,43 +58,145 @@ namespace BtsGetwayService
                 string host = grp.FtpIp.Trim();
                 if (!string.IsNullOrEmpty(userName) && !string.IsNullOrEmpty(password) && !string.IsNullOrEmpty(host))
                 {
+                    #region Lấy dữ liệu
                     var dateTimeStr = "";
-                    List<ModelFileS10Json> dataTramKhiTuong = new List<ModelFileS10Json>();
-                    List<ModelFileTramThuyVanJson> dataTramThuyVan = new List<ModelFileTramThuyVanJson>();
+                    List<ModelFileKhiTuongS10Json> dataTramKhiTuong = new List<ModelFileKhiTuongS10Json>();
+                    List<ModelFileGioS10Json> dataTramGio = new List<ModelFileGioS10Json>();
+                    List<ModelFileLuongMuaS10Json> dataMua = new List<ModelFileLuongMuaS10Json>();
+                    List<ModelFileMuaNhietS10Json> dataMuaNhiet = new List<ModelFileMuaNhietS10Json>();
+                    List<ModelFileThuyVanS10Json> dataThuyVan = new List<ModelFileThuyVanS10Json>();
                     try
                     {
                         List<Site> lstSite = _siteData.GetListSite(grp.Id).ToList();
                         foreach (var site in lstSite)
                         {
-                            if (site.DeviceId.HasValue)
+                            if (site.TypeSiteId == Constant.KhiTuong)
                             {
-                                var reportS10ByDevice = _reportS10Data.GetByTime(from, to, site.DeviceId.Value);
-                                if (reportS10ByDevice != null)
+                                if (site.DeviceId.HasValue)
                                 {
-                                    foreach (var item in reportS10ByDevice)
+                                    var reportS10ByDevice = _reportS10Data.GetByTime(from, to, site.DeviceId.Value);
+                                    if (reportS10ByDevice != null)
                                     {
-                                        ModelFileS10Json modelFileS10Json = new ModelFileS10Json();
-                                        modelFileS10Json.StationNo = item.DeviceId.Value;
-                                        modelFileS10Json.Datadate = double.Parse(item.DateCreate.Value.ToString("yyyyMMddHHmmss"));
-                                        modelFileS10Json.T2m = item.MTI.Value;
-                                        modelFileS10Json.T2mmax = item.MTX.Value;
-                                        modelFileS10Json.T2mmin = item.MTM.Value;
-                                        modelFileS10Json.Rh2m = item.MHU.Value;
-                                        modelFileS10Json.R2mmax = item.MHX.Value;
-                                        modelFileS10Json.R2mmin = item.MHM.Value;
-                                        modelFileS10Json.PS = item.MAV.Value;
-                                        modelFileS10Json.FF10m = item.MSM.Value;
-                                        modelFileS10Json.DD10m = item.MDM.Value;
-                                        modelFileS10Json.FxFx = item.MSS.Value;
-                                        modelFileS10Json.DxDx = item.MDS.Value;
-                                        modelFileS10Json.DtdateFxDx = item.MHR.Value;
-                                        modelFileS10Json.Rain10m = item.MRT.Value;
-                                        modelFileS10Json.Rain1h = item.MRH.Value;
-                                        modelFileS10Json.Rain19h = item.MRC.Value;
-                                        modelFileS10Json.Rain00h = item.MRB.Value;
-                                        modelFileS10Json.Battery = item.MVC.Value;
-                                        dataTramKhiTuong.Add(modelFileS10Json);
-                                        dateTimeStr = modelFileS10Json.Datadate.ToString();
+                                        foreach (var item in reportS10ByDevice)
+                                        {
+                                            ModelFileKhiTuongS10Json modelFileS10Json = new ModelFileKhiTuongS10Json();
+                                            modelFileS10Json.StationNo = item.DeviceId.Value.ToString("D6");
+                                            modelFileS10Json.Datadate = double.Parse(item.DateCreate.Value.ToString("yyyyMMddHHmmss"));
+                                            modelFileS10Json.T2m = item.MTI.Value;
+                                            modelFileS10Json.T2mmax = item.MTX.Value;
+                                            modelFileS10Json.T2mmin = item.MTM.Value;
+                                            modelFileS10Json.Rh2m = item.MHU.Value;
+                                            modelFileS10Json.R2mmax = item.MHX.Value;
+                                            modelFileS10Json.R2mmin = item.MHM.Value;
+                                            modelFileS10Json.PS = item.MAV.Value;
+                                            modelFileS10Json.FF10m = item.MSM.Value;
+                                            modelFileS10Json.DD10m = item.MDM.Value;
+                                            modelFileS10Json.FxFx = item.MSS.Value;
+                                            modelFileS10Json.DxDx = item.MDS.Value;
+                                            modelFileS10Json.DtdateFxDx = item.MHR.Value;
+                                            modelFileS10Json.Rain10m = item.MRT.Value;
+                                            modelFileS10Json.Rain1h = item.MRH.Value;
+                                            modelFileS10Json.Rain19h = item.MRC.Value;
+                                            modelFileS10Json.Rain00h = item.MRB.Value;
+                                            modelFileS10Json.Battery = item.MVC.Value;
+                                            dataTramKhiTuong.Add(modelFileS10Json);
+                                            dateTimeStr = modelFileS10Json.Datadate.ToString();
+                                        }
+                                    }
+                                }
+                            }
+                            else if (site.TypeSiteId == Constant.ThuyVan)
+                            {
+                                if (site.DeviceId.HasValue)
+                                {
+                                    var reportS10ByDevice = _reportS10Data.GetByTime(from, to, site.DeviceId.Value);
+                                    if (reportS10ByDevice != null)
+                                    {
+                                        foreach (var item in reportS10ByDevice)
+                                        {
+                                            ModelFileThuyVanS10Json modelFileS10Json = new ModelFileThuyVanS10Json();
+                                            modelFileS10Json.StationNo = item.DeviceId.Value.ToString("D6");
+                                            modelFileS10Json.Datadate = double.Parse(item.DateCreate.Value.ToString("yyyyMMddHHmmss"));
+                                            modelFileS10Json.WL = 0;
+                                            dataThuyVan.Add(modelFileS10Json);
+                                            dateTimeStr = modelFileS10Json.Datadate.ToString();
+                                        }
+                                    }
+                                }
+                            }
+                            else if (site.TypeSiteId == Constant.DoMua)
+                            {
+                                if (site.DeviceId.HasValue)
+                                {
+                                    var reportS10ByDevice = _reportS10Data.GetByTime(from, to, site.DeviceId.Value);
+                                    if (reportS10ByDevice != null)
+                                    {
+                                        foreach (var item in reportS10ByDevice)
+                                        {
+                                            ModelFileLuongMuaS10Json modelFileS10Json = new ModelFileLuongMuaS10Json();
+                                            modelFileS10Json.StationNo = item.DeviceId.Value.ToString("D6");
+                                            modelFileS10Json.Datadate = double.Parse(item.DateCreate.Value.ToString("yyyyMMddHHmmss"));
+                                            modelFileS10Json.Rain10m = item.MRT.Value;
+                                            modelFileS10Json.Rain1h = item.MRH.Value;
+                                            modelFileS10Json.Rain19h = item.MRC.Value;
+                                            modelFileS10Json.Rain00h = item.MRB.Value;
+                                            modelFileS10Json.Battery = item.MVC.Value;
+                                            dataMua.Add(modelFileS10Json);
+                                            dateTimeStr = modelFileS10Json.Datadate.ToString();
+                                        }
+                                    }
+                                }
+                            }
+                            else if (site.TypeSiteId == Constant.DoGio)
+                            {
+                                if (site.DeviceId.HasValue)
+                                {
+                                    var reportS10ByDevice = _reportS10Data.GetByTime(from, to, site.DeviceId.Value);
+                                    if (reportS10ByDevice != null)
+                                    {
+                                        foreach (var item in reportS10ByDevice)
+                                        {
+                                            ModelFileGioS10Json modelFileS10Json = new ModelFileGioS10Json();
+                                            modelFileS10Json.StationNo = item.DeviceId.Value.ToString("D5");
+                                            modelFileS10Json.Datadate = double.Parse(item.DateCreate.Value.ToString("yyyyMMddHHmmss"));
+                                            modelFileS10Json.FF10m = item.MSM.Value;
+                                            modelFileS10Json.DD10m = item.MDM.Value;
+                                            modelFileS10Json.FxFx = item.MSS.Value;
+                                            modelFileS10Json.DxDx = item.MDS.Value;
+                                            modelFileS10Json.DtdateFxDx = item.MHR.Value;
+                                            modelFileS10Json.Battery = item.MVC.Value;
+                                            dataTramGio.Add(modelFileS10Json);
+                                            dateTimeStr = modelFileS10Json.Datadate.ToString();
+                                        }
+                                    }
+                                }
+                            }
+                            else if (site.TypeSiteId == Constant.MuaNhiet)
+                            {
+                                if (site.DeviceId.HasValue)
+                                {
+                                    var reportS10ByDevice = _reportS10Data.GetByTime(from, to, site.DeviceId.Value);
+                                    if (reportS10ByDevice != null)
+                                    {
+                                        foreach (var item in reportS10ByDevice)
+                                        {
+                                            ModelFileMuaNhietS10Json modelFileS10Json = new ModelFileMuaNhietS10Json();
+                                            modelFileS10Json.StationNo = item.DeviceId.Value.ToString("D6");
+                                            modelFileS10Json.Datadate = double.Parse(item.DateCreate.Value.ToString("yyyyMMddHHmmss"));
+                                            modelFileS10Json.T2m = item.MTI.Value;
+                                            modelFileS10Json.T2mmax = item.MTX.Value;
+                                            modelFileS10Json.T2mmin = item.MTM.Value;
+                                            modelFileS10Json.Rh2m = item.MHU.Value;
+                                            modelFileS10Json.R2mmax = item.MHX.Value;
+                                            modelFileS10Json.R2mmin = item.MHM.Value;
+                                            modelFileS10Json.Rain10m = item.MRT.Value;
+                                            modelFileS10Json.Rain1h = item.MRH.Value;
+                                            modelFileS10Json.Rain19h = item.MRC.Value;
+                                            modelFileS10Json.Rain00h = item.MRB.Value;
+                                            modelFileS10Json.Battery = item.MVC.Value;
+                                            dataMuaNhiet.Add(modelFileS10Json);
+                                            dateTimeStr = modelFileS10Json.Datadate.ToString();
+                                        }
                                     }
                                 }
                             }
@@ -103,13 +206,19 @@ namespace BtsGetwayService
                     {
                         _loggingService.Error(ex);
                     }
-                    string urlFullPathFolder = appConfigPath + helperUlti.GetDay(to) + "\\";
+                    #endregion
+
+                    #region Tạo directory trên server
+                    string urlFullPathFolder = appConfigPath + appConfigFolderTTTT + "\\" + helperUlti.GetDay(to) + "\\";
                     bool exists = Directory.Exists(urlFullPathFolder);
                     if (!exists)
                         Directory.CreateDirectory(urlFullPathFolder);
+                    #endregion
+
+                    #region Tạo file trên server và gửi dữ liệu sang TTDL
                     if (dataTramKhiTuong != null && dataTramKhiTuong.Count() > 0)
                     {
-                        string nameFile = grp.Code + "_AWS_" + dateTimeStr + ".json";
+                        string nameFile = grp.Code + "_" + Constant.MaKhiTuong + "_" + dateTimeStr + ".json";
                         string path = urlFullPathFolder + nameFile;
                         try
                         {
@@ -122,7 +231,7 @@ namespace BtsGetwayService
                             }
                         }
                         catch (Exception ex)
-                        {                            
+                        {
                             _loggingService.Error(ex);
                         }
                         try
@@ -133,9 +242,116 @@ namespace BtsGetwayService
                         {
                             _loggingService.Error(ex);
                         }
-
                     }
-
+                    if (dataTramGio != null && dataTramGio.Count() > 0)
+                    {
+                        string nameFile = grp.Code + "_" + Constant.MaDoGio + "_" + dateTimeStr + ".json";
+                        string path = urlFullPathFolder + nameFile;
+                        try
+                        {
+                            var options = new JsonSerializerOptions { WriteIndented = true };
+                            string jsonString = System.Text.Json.JsonSerializer.Serialize(dataTramGio, options);
+                            //Create a new file
+                            if (!File.Exists(path))
+                            {
+                                File.WriteAllText(path, jsonString);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            _loggingService.Error(ex);
+                        }
+                        try
+                        {
+                            GetOrCreateFolder(appConfigFolderTTTT, to, nameFile, path, userName, password, host);
+                        }
+                        catch (Exception ex)
+                        {
+                            _loggingService.Error(ex);
+                        }
+                    }
+                    if (dataMua != null && dataMua.Count() > 0)
+                    {
+                        string nameFile = grp.Code + "_" + Constant.DoMua + "_" + dateTimeStr + ".json";
+                        string path = urlFullPathFolder + nameFile;
+                        try
+                        {
+                            var options = new JsonSerializerOptions { WriteIndented = true };
+                            string jsonString = System.Text.Json.JsonSerializer.Serialize(dataMua, options);
+                            //Create a new file
+                            if (!File.Exists(path))
+                            {
+                                File.WriteAllText(path, jsonString);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            _loggingService.Error(ex);
+                        }
+                        try
+                        {
+                            GetOrCreateFolder(appConfigFolderTTTT, to, nameFile, path, userName, password, host);
+                        }
+                        catch (Exception ex)
+                        {
+                            _loggingService.Error(ex);
+                        }
+                    }
+                    if (dataMuaNhiet != null && dataMuaNhiet.Count() > 0)
+                    {
+                        string nameFile = grp.Code + "_" + Constant.MuaNhiet + "_" + dateTimeStr + ".json";
+                        string path = urlFullPathFolder + nameFile;
+                        try
+                        {
+                            var options = new JsonSerializerOptions { WriteIndented = true };
+                            string jsonString = System.Text.Json.JsonSerializer.Serialize(dataMuaNhiet, options);
+                            //Create a new file
+                            if (!File.Exists(path))
+                            {
+                                File.WriteAllText(path, jsonString);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            _loggingService.Error(ex);
+                        }
+                        try
+                        {
+                            GetOrCreateFolder(appConfigFolderTTTT, to, nameFile, path, userName, password, host);
+                        }
+                        catch (Exception ex)
+                        {
+                            _loggingService.Error(ex);
+                        }
+                    }
+                    if (dataThuyVan != null && dataThuyVan.Count() > 0)
+                    {
+                        string nameFile = grp.Code + "_" + Constant.ThuyVan + "_" + dateTimeStr + ".json";
+                        string path = urlFullPathFolder + nameFile;
+                        try
+                        {
+                            var options = new JsonSerializerOptions { WriteIndented = true };
+                            string jsonString = System.Text.Json.JsonSerializer.Serialize(dataMuaNhiet, options);
+                            //Create a new file
+                            if (!File.Exists(path))
+                            {
+                                File.WriteAllText(path, jsonString);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            _loggingService.Error(ex);
+                        }
+                        try
+                        {
+                            GetOrCreateFolder(appConfigFolderTTTT, to, nameFile, path, userName, password, host);
+                        }
+                        catch (Exception ex)
+                        {
+                            _loggingService.Error(ex);
+                        }
+                    }
+                    #endregion
                 }
             }
         }

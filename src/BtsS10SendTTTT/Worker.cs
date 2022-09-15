@@ -30,14 +30,18 @@ namespace BtsS10SendTTTT
             {
                 DateTime from = _helperUlti.RoundDown(DateTime.Now, TimeSpan.FromMinutes(10));
                 DateTime to = from.AddMinutes(10);
-                _logger.LogInformation("Time start: {0}", from.ToString("dd/MM/yyyy HH:mm"));
+                _logger.LogInformation("Time start: {0}", DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
+                _logger.LogInformation("Time start send data: {0}", from.ToString("dd/MM/yyyy HH:mm:ss"));
                 _btsGetway.SendFile(to, from);
                 await Task.Delay(600000, stoppingToken);
             }
         }
-        public override Task StartAsync(CancellationToken cancellationToken)
+        public override async Task<Task> StartAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Worker starting at: {0}", DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm"));
+            var dateTimeNow = DateTime.Now;
+            var milisecondDelay = _helperUlti.ThoiGianDelayDeBatDauChayService(dateTimeNow);                        
+            _logger.LogInformation("Worker starting at: {0}", DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss"));
+            await Task.Delay(milisecondDelay);
             return base.StartAsync(cancellationToken);
         }
         public override Task StopAsync(CancellationToken cancellationToken)

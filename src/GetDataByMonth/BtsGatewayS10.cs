@@ -64,7 +64,7 @@ namespace GetDataByMonth
                         //if (!string.IsNullOrEmpty(userName) && !string.IsNullOrEmpty(password) && !string.IsNullOrEmpty(host))
                         //{
                         var dateTimeStr = "";
-                        List<ModelFileS10Json> dataTramKhiTuong = new List<ModelFileS10Json>();
+                        List<ModelFileKhiTuongS10Json> dataTramKhiTuong = new List<ModelFileKhiTuongS10Json>();
                         try
                         {
                             List<Site> lstSite = _siteData.GetListSite(grp.Id).ToList();
@@ -76,7 +76,7 @@ namespace GetDataByMonth
                                     if (reportS10ByDevice != null && reportS10ByDevice.Count() > 0)
                                         foreach (var item in reportS10ByDevice)
                                         {
-                                            ModelFileS10Json modelFileS10Json = new ModelFileS10Json();
+                                            ModelFileKhiTuongS10Json modelFileS10Json = new ModelFileKhiTuongS10Json();
                                             modelFileS10Json.StationNo = item.DeviceId.Value;
                                             modelFileS10Json.Datadate = double.Parse(item.DateCreate.Value.ToString("yyyyMMddHHmmss"));
                                             modelFileS10Json.T2m = item.MTI.Value;

@@ -23,6 +23,8 @@ namespace BtsGetwayService.MongoDb.Entity
 
         [BsonElement("BTI")]
         public double BTI { get; set; }
+        [BsonElement("Content")]
+        public string Content { get; set; }
 
         [BsonElement("BT1")]
         public double BT1 { get; set; }

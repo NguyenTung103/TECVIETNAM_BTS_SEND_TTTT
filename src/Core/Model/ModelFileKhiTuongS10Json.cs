@@ -4,12 +4,12 @@ using System.Text;
 
 namespace BtsGetwayService.Model
 {
-    public class ModelFileS10Json
+    public class ModelFileKhiTuongS10Json
     {
         /// <summary>
         /// ID Trạm
         /// </summary>
-        public int StationNo { get; set; }
+        public string StationNo { get; set; }
         /// <summary>
         /// Ngày gửi
         /// </summary>

@@ -104,7 +104,7 @@ namespace BtsGetwayService
         public string DatetimeOnlyNumber(DateTime dateInput)
         {
             var date = RoundDown(dateInput.ToLocalTime(), TimeSpan.FromMinutes(10));
-            string result = date.Year.ToString() + date.Month.ToString("D2") + date.Day.ToString("D2") + date.Hour.ToString("D2") + date.Minute.ToString("D2")+ "00";
+            string result = date.Year.ToString() + date.Month.ToString("D2") + date.Day.ToString("D2") + date.Hour.ToString("D2") + date.Minute.ToString("D2") + "00";
             return result;
         }
         public string GetDay(DateTime date)
@@ -118,5 +118,37 @@ namespace BtsGetwayService
 
             return new DateTime(dt.Ticks - delta, dt.Kind);
         }
+        public DateTime RoundUp(DateTime dt, TimeSpan d)
+        {
+            return new DateTime((dt.Ticks + d.Ticks - 1) / d.Ticks * d.Ticks, dt.Kind);
+        }
+        public int ThoiGianDelayDeBatDauChayService(DateTime input, int minute = 1)
+        {
+            var timeStart = RoundUp(input, TimeSpan.FromMinutes(10));
+            TimeSpan span;
+            if (minute == 0)
+            {
+                span = timeStart - input;
+            }
+            else
+            {
+                span = timeStart.AddMinutes(minute) - input;
+            }
+            int ms = (int)span.TotalMilliseconds;
+            return ms;
+        }
+    }
+    public static class Constant
+    {
+        public static int KhiTuong = 1;
+        public static int ThuyVan = 2;
+        public static int DoMua = 3;
+        public static int DoGio = 4;
+        public static int MuaNhiet = 5;
+        public static string MaKhiTuong = "AWS";
+        public static string MaThuyVan = "WL";
+        public static string MaDoMua = "RAIN";
+        public static string MaDoGio = "WIND";
+        public static string MaMuaNhiet = "RAINTEMP";
     }
 }

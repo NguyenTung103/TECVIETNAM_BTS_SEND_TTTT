@@ -34,9 +34,12 @@ namespace BtsSendTTTT
                 await Task.Delay(600000, stoppingToken);
             }
         }
-        public override Task StartAsync(CancellationToken cancellationToken)
+        public override async Task<Task> StartAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Worker starting at: {0}", DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm"));
+            var dateTimeNow = DateTime.Now;
+            var milisecondDelay = _helperUlti.ThoiGianDelayDeBatDauChayService(dateTimeNow,0);
+            _logger.LogInformation("Worker starting at: {0}", DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss"));
+            await Task.Delay(milisecondDelay);
             return base.StartAsync(cancellationToken);
         }
         public override Task StopAsync(CancellationToken cancellationToken)

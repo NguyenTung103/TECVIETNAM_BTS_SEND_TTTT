@@ -20,6 +20,7 @@ using Microsoft.Extensions.Options;
 using Core.Setting;
 using BtsGetwayService.Interface;
 using Core.Logging;
+using Core.Model;
 
 namespace BtsGetwayService
 {
@@ -64,7 +65,7 @@ namespace BtsGetwayService
                 if (!string.IsNullOrEmpty(userName) && !string.IsNullOrEmpty(password) && !string.IsNullOrEmpty(host))
                 {
                     List<ModelFileTramKhiTuongJson> dataTramKhiTuong = new List<ModelFileTramKhiTuongJson>();
-                    List<ModelFileTramThuyVanJson> dataTramThuyVan = new List<ModelFileTramThuyVanJson>();
+                    List<ModelFileThuyVanS10Json> dataTramThuyVan = new List<ModelFileThuyVanS10Json>();
                     try
                     {
                         List<Site> lstSite = _siteData.GetListSite(grp.Id).ToList();
@@ -104,7 +105,7 @@ namespace BtsGetwayService
                                     }
                                     else
                                     {
-                                        ModelFileTramThuyVanJson dataOfSite = new ModelFileTramThuyVanJson();
+                                        ModelFileThuyVanS10Json dataOfSite = new ModelFileThuyVanS10Json();
                                         dataOfSite.StationNo = site.DeviceId.ToString();
                                         dataOfSite.Datadate = long.Parse(helperUlti.DatetimeOnlyNumber(to));
                                         dataOfSite.WL = float.Parse(obs.BAF.ToString());
