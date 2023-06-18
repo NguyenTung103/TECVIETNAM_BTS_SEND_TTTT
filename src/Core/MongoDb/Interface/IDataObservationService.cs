@@ -15,5 +15,6 @@ namespace BtsGetwayService.Interface
         Task<IEnumerable<BtsGetwayService.MongoDb.Entity.Data>> GetDatayDeviceId(DateTime fromDate, DateTime toDate, int deviceId);
         List<BtsGetwayService.MongoDb.Entity.Data> GetOffline(int deviceId, int skip, int limit, out int total);
         List<BtsGetwayService.MongoDb.Entity.Data> GetByDeviceId(int deviceId, int skip, int limit, out int total);
+        bool Insert(BtsGetwayService.MongoDb.Entity.Data data);
     }
 }

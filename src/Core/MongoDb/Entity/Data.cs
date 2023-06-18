@@ -11,7 +11,7 @@ namespace BtsGetwayService.MongoDb.Entity
 {
     [BsonIgnoreExtraElements]
     public class Data : MongoBaseEntity
-    {        
+    {
         [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
         [BsonElement("DateCreate")]
         public DateTime DateCreate { get; set; }
@@ -29,6 +29,12 @@ namespace BtsGetwayService.MongoDb.Entity
         [BsonElement("BT1")]
         public double BT1 { get; set; }
 
+        [BsonElement("BPR")]
+        public double BPR { get; set; }
+
+        [BsonElement("BVC")]
+        public double BVC { get; set; }
+        
         [BsonElement("BHU")]
         public double BHU { get; set; }
 

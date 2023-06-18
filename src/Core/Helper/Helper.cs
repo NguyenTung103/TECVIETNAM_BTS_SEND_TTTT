@@ -122,7 +122,7 @@ namespace BtsGetwayService
         {
             return new DateTime((dt.Ticks + d.Ticks - 1) / d.Ticks * d.Ticks, dt.Kind);
         }
-        public int ThoiGianDelayDeBatDauChayService(DateTime input, int minute = 1)
+        public int ThoiGianDelayDeBatDauChayService(DateTime input, int minute = 2)
         {
             var timeStart = RoundUp(input, TimeSpan.FromMinutes(10));
             TimeSpan span;
@@ -150,5 +150,19 @@ namespace BtsGetwayService
         public static string MaDoMua = "RAIN";
         public static string MaDoGio = "WIND";
         public static string MaMuaNhiet = "RAINTEMP";
+    }
+    public static class Utility
+    {
+        public static double CheckNull(double? input)
+        {
+            if (input.HasValue)
+            {
+                return input.Value;
+            }
+            else
+            {
+                return -9999;
+            }
+        }
     }
 }

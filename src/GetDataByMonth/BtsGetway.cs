@@ -19,6 +19,8 @@ using Core.MSSQL.Responsitory.Interface;
 using Microsoft.Extensions.Options;
 using Core.Setting;
 using BtsGetwayService.Interface;
+using Core.Model;
+using static log4net.Appender.RollingFileAppender;
 
 namespace BtsGetwayService
 {
@@ -30,6 +32,7 @@ namespace BtsGetwayService
         public readonly IReportDailyHuongGioData _reportDailyHuongGioData;
         public readonly IReportDailyTocDoGioData _reportDailyTocDoGioData;
         public readonly IDataObservationService _dataObservationMongoService;
+        public readonly IReportS10Data _reportS10Data;
         public readonly AppSetting _appSetting;
         Helper helperUlti = new Helper();
         public BtsGetway(
@@ -38,7 +41,8 @@ namespace BtsGetwayService
             ISiteData siteData,
             IDataObservationService dataObservationMongoService,
             IReportDailyTocDoGioData reportDailyTocDoGioData,
-            IReportDailyHuongGioData reportDailyHuongGioData)
+            IReportDailyHuongGioData reportDailyHuongGioData,
+             IReportS10Data reportS10Data)
         {
             _appSetting = option.Value;
             _groupData = groupData;
@@ -46,6 +50,7 @@ namespace BtsGetwayService
             _reportDailyHuongGioData = reportDailyHuongGioData;
             _reportDailyTocDoGioData = reportDailyTocDoGioData;
             _dataObservationMongoService = dataObservationMongoService;
+            _reportS10Data = reportS10Data;
         }
         public void SendFile(int nam, int thang)
         {            
@@ -58,109 +63,154 @@ namespace BtsGetwayService
                     var to = date.AddMinutes((i + 1) * 10);                   
                     string appConfigPath = _appSetting.FolderLuuTruFile + @"\data_thang_" + thang.ToString() + @"\";
                     foreach (var grp in lstGroup)
-                    {
-                        List<ModelFileTramKhiTuongJson> dataTramKhiTuong = new List<ModelFileTramKhiTuongJson>();
-                        List<ModelFileTramThuyVanJson> dataTramThuyVan = new List<ModelFileTramThuyVanJson>();
+                    {                        
+                        string userName = grp.FtpAccount.Trim();
+                        string password = grp.FtpPassword.Trim();
+                        string appConfigFolderTTTT = grp.FtpDirectory.Trim();
+                        string host = grp.FtpIp.Trim();
+                        DateTime dateTime = from;
+                        var dateTimeStr = "";
+                        List<ModelFileKhiTuongS10Json> dataTramKhiTuong = new List<ModelFileKhiTuongS10Json>();
+                        List<ModelFileGioS10Json> dataTramGio = new List<ModelFileGioS10Json>();
+                        List<ModelFileLuongMuaS10Json> dataMua = new List<ModelFileLuongMuaS10Json>();
+                        List<ModelFileMuaNhietS10Json> dataMuaNhiet = new List<ModelFileMuaNhietS10Json>();
+                        List<ModelFileThuyVanS10Json> dataThuyVan = new List<ModelFileThuyVanS10Json>();
                         try
                         {
                             List<Site> lstSite = _siteData.GetListSite(grp.Id).ToList();
                             foreach (var site in lstSite)
                             {
-                                var tocDoGioGiatByDevice = _reportDailyTocDoGioData.GetTocDoGioLatest(site.DeviceId.Value);
-                                string valueHuongGio2m = "0", valueTocDoGio2m = "0", valueHuongGio2s = "0", valueTocDoGio2s = "0";
-                                if (tocDoGioGiatByDevice != null)
+                                if (site.TypeSiteId == Constant.KhiTuong)
                                 {
-                                    valueTocDoGio2s = tocDoGioGiatByDevice.TocDoGioLonNhat.HasValue ? tocDoGioGiatByDevice.TocDoGioLonNhat.Value.ToString() : "0";
-                                    valueHuongGio2s = tocDoGioGiatByDevice.HuongGioCuaTocDoLonNhat.HasValue ? tocDoGioGiatByDevice.HuongGioCuaTocDoLonNhat.Value.ToString() : "0";
-                                    valueTocDoGio2m = tocDoGioGiatByDevice.TocDoGioNhoNhat.HasValue ? tocDoGioGiatByDevice.TocDoGioNhoNhat.Value.ToString() : "0";
-                                    valueHuongGio2m = tocDoGioGiatByDevice.HuongGioCuarTocDoNhoNhat.HasValue ? tocDoGioGiatByDevice.HuongGioCuarTocDoNhoNhat.Value.ToString() : "0";
-                                }
-                                try
-                                {
-                                    BtsGetwayService.MongoDb.Entity.Data obs = new BtsGetwayService.MongoDb.Entity.Data();
-                                    obs = _dataObservationMongoService.GetDataPagingByDeviceId(from, to, site.DeviceId.Value, 0, 1, out int total).FirstOrDefault();
-                                    if (obs != null)
+                                    if (site.DeviceId.HasValue)
                                     {
-                                        if (site.TypeSiteId == 1)
+                                        var item = _reportS10Data.GetByTime(from, to, site.DeviceId.Value).LastOrDefault();
+                                        if (item != null)
                                         {
-                                            ModelFileTramKhiTuongJson dataOfSite = new ModelFileTramKhiTuongJson();
-                                            dataOfSite.StationNo = site.DeviceId.ToString();
-                                            dataOfSite.Datadate = long.Parse(helperUlti.DatetimeOnlyNumber(to));
-                                            dataOfSite.DD10m = float.Parse(valueHuongGio2m);
-                                            dataOfSite.FF10m = float.Parse(valueTocDoGio2m);
-                                            dataOfSite.T2m = float.Parse(obs.BTI.ToString());
-                                            dataOfSite.Rh2m = float.Parse(obs.BHU.ToString());
-                                            dataOfSite.DxDx = float.Parse(valueHuongGio2s);
-                                            dataOfSite.FxFx = float.Parse(valueTocDoGio2s);
-                                            dataOfSite.Rain24h = float.Parse(obs.BAC.ToString());
-                                            dataOfSite.PS = float.Parse(obs.BAV.ToString());
-                                            dataOfSite.FTFT = float.Parse(obs.BWS.ToString());
-                                            dataOfSite.DTDT = float.Parse(obs.BAP.ToString());
-                                            dataTramKhiTuong.Add(dataOfSite);
-                                        }
-                                        else
-                                        {
-                                            ModelFileTramThuyVanJson dataOfSite = new ModelFileTramThuyVanJson();
-                                            dataOfSite.StationNo = site.DeviceId.ToString();
-                                            dataOfSite.Datadate = long.Parse(helperUlti.DatetimeOnlyNumber(to));
-                                            dataOfSite.WL = float.Parse(obs.BAF.ToString());
-                                            dataTramThuyVan.Add(dataOfSite);
+                                            ModelFileKhiTuongS10Json modelFileS10Json = new ModelFileKhiTuongS10Json();
+                                            modelFileS10Json.StationNo = item.DeviceId.Value.ToString("D5");
+                                            modelFileS10Json.Datadate = double.Parse(item.DateCreate.Value.ToString("yyyyMMddHHmmss"));
+                                            modelFileS10Json.T2m = Utility.CheckNull(item.MTI);
+                                            modelFileS10Json.T2mmax = Utility.CheckNull(item.MTX);
+                                            modelFileS10Json.T2mmin = Utility.CheckNull(item.MTM);
+                                            modelFileS10Json.Rh2m = Utility.CheckNull(item.MHU);
+                                            modelFileS10Json.R2mmax = Utility.CheckNull(item.MHX);
+                                            modelFileS10Json.R2mmin = Utility.CheckNull(item.MHM);
+                                            modelFileS10Json.PS = Utility.CheckNull(item.MAV);
+                                            modelFileS10Json.FF10m = Utility.CheckNull(item.MSM);
+                                            modelFileS10Json.DD10m = Utility.CheckNull(item.MDM);
+                                            modelFileS10Json.FxFx = Utility.CheckNull(item.MSS);
+                                            modelFileS10Json.DxDx = Utility.CheckNull(item.MDS);
+                                            modelFileS10Json.DtdateFxDx = Utility.CheckNull(item.MHR);
+                                            modelFileS10Json.Rain10m = Utility.CheckNull(item.MRT);
+                                            modelFileS10Json.Rain1h = Utility.CheckNull(item.MRH);
+                                            modelFileS10Json.Rain19h = Utility.CheckNull(item.MRC);
+                                            modelFileS10Json.Rain00h = Utility.CheckNull(item.MRB);
+                                            modelFileS10Json.Battery = Utility.CheckNull(item.MVC);
+                                            dataTramKhiTuong.Add(modelFileS10Json);
+                                            dateTimeStr = modelFileS10Json.Datadate.ToString();
+                                            dateTime = item.DateCreate.Value;
                                         }
                                     }
-
-
                                 }
-                                catch (Exception ex)
+                                else if (site.TypeSiteId == Constant.ThuyVan)
                                 {
-
+                                    if (site.DeviceId.HasValue)
+                                    {
+                                        var item = _reportS10Data.GetByTime(from, to, site.DeviceId.Value).LastOrDefault();
+                                        if (item != null)
+                                        {
+                                            ModelFileThuyVanS10Json modelFileS10Json = new ModelFileThuyVanS10Json();
+                                            modelFileS10Json.StationNo = item.DeviceId.Value.ToString("D5");
+                                            modelFileS10Json.Datadate = double.Parse(item.DateCreate.Value.ToString("yyyyMMddHHmmss"));
+                                            modelFileS10Json.WL = 0;
+                                            dataThuyVan.Add(modelFileS10Json);
+                                            dateTimeStr = modelFileS10Json.Datadate.ToString();
+                                            dateTime = item.DateCreate.Value;
+                                        }
+                                    }
                                 }
-
+                                else if (site.TypeSiteId == Constant.DoMua)
+                                {
+                                    if (site.DeviceId.HasValue)
+                                    {
+                                        var item = _reportS10Data.GetByTime(from, to, site.DeviceId.Value).LastOrDefault();
+                                        if (item != null)
+                                        {
+                                            ModelFileLuongMuaS10Json modelFileS10Json = new ModelFileLuongMuaS10Json();
+                                            modelFileS10Json.StationNo = item.DeviceId.Value.ToString("D6");
+                                            modelFileS10Json.Datadate = double.Parse(item.DateCreate.Value.ToString("yyyyMMddHHmmss"));
+                                            modelFileS10Json.Rain10m = Utility.CheckNull(item.MRT);
+                                            modelFileS10Json.Rain1h = Utility.CheckNull(item.MRH);
+                                            modelFileS10Json.Rain19h = Utility.CheckNull(item.MRC);
+                                            modelFileS10Json.Rain00h = Utility.CheckNull(item.MRB);
+                                            modelFileS10Json.Battery = Utility.CheckNull(item.MVC);
+                                            dataMua.Add(modelFileS10Json);
+                                            dateTimeStr = modelFileS10Json.Datadate.ToString();
+                                            dateTime = item.DateCreate.Value;
+                                        }
+                                    }
+                                }
+                                else if (site.TypeSiteId == Constant.DoGio)
+                                {
+                                    if (site.DeviceId.HasValue)
+                                    {
+                                        var item = _reportS10Data.GetByTime(from, to, site.DeviceId.Value).LastOrDefault();
+                                        if (item != null)
+                                        {
+                                            ModelFileGioS10Json modelFileS10Json = new ModelFileGioS10Json();
+                                            modelFileS10Json.StationNo = item.DeviceId.Value.ToString("D6");
+                                            modelFileS10Json.Datadate = double.Parse(item.DateCreate.Value.ToString("yyyyMMddHHmmss"));
+                                            modelFileS10Json.FF10m = Utility.CheckNull(item.MSM);
+                                            modelFileS10Json.DD10m = Utility.CheckNull(item.MDM);
+                                            modelFileS10Json.FxFx = Utility.CheckNull(item.MSS);
+                                            modelFileS10Json.DxDx = Utility.CheckNull(item.MDS);
+                                            modelFileS10Json.DtdateFxDx = Utility.CheckNull(item.MHR);
+                                            modelFileS10Json.Battery = Utility.CheckNull(item.MVC);
+                                            dataTramGio.Add(modelFileS10Json);
+                                            dateTimeStr = modelFileS10Json.Datadate.ToString();
+                                            dateTime = item.DateCreate.Value;
+                                        }
+                                    }
+                                }
+                                else if (site.TypeSiteId == Constant.MuaNhiet)
+                                {
+                                    if (site.DeviceId.HasValue)
+                                    {
+                                        var item = _reportS10Data.GetByTime(from, to, site.DeviceId.Value).LastOrDefault();
+                                        if (item != null)
+                                        {
+                                            ModelFileMuaNhietS10Json modelFileS10Json = new ModelFileMuaNhietS10Json();
+                                            modelFileS10Json.StationNo = item.DeviceId.Value.ToString("D5");
+                                            modelFileS10Json.Datadate = double.Parse(item.DateCreate.Value.ToString("yyyyMMddHHmmss"));
+                                            modelFileS10Json.T2m = Utility.CheckNull(item.MTI);
+                                            modelFileS10Json.T2mmax = Utility.CheckNull(item.MTX);
+                                            modelFileS10Json.T2mmin = Utility.CheckNull(item.MTM);
+                                            modelFileS10Json.Rh2m = Utility.CheckNull(item.MHU);
+                                            modelFileS10Json.R2mmax = Utility.CheckNull(item.MHX);
+                                            modelFileS10Json.R2mmin = Utility.CheckNull(item.MHM);
+                                            modelFileS10Json.Rain10m = Utility.CheckNull(item.MRT);
+                                            modelFileS10Json.Rain1h = Utility.CheckNull(item.MRH);
+                                            modelFileS10Json.Rain19h = Utility.CheckNull(item.MRC);
+                                            modelFileS10Json.Rain00h = Utility.CheckNull(item.MRB);
+                                            modelFileS10Json.Battery = Utility.CheckNull(item.MVC);
+                                            dataMuaNhiet.Add(modelFileS10Json);
+                                            dateTimeStr = modelFileS10Json.Datadate.ToString();
+                                            dateTime = item.DateCreate.Value;
+                                        }
+                                    }
+                                }
                             }
                         }
                         catch (Exception ex)
                         {
                         }
-                        string urlFullPathFolder = appConfigPath + helperUlti.GetDay(to) + "\\";
+                        #region Tạo directory trên server
+                        string urlFullPathFolder = appConfigPath + appConfigFolderTTTT + "\\" + helperUlti.GetDay(dateTime) + "\\";
                         bool exists = Directory.Exists(urlFullPathFolder);
                         if (!exists)
                             Directory.CreateDirectory(urlFullPathFolder);
-                        if (dataTramKhiTuong != null && dataTramKhiTuong.Count() > 0)
-                        {
-                            string nameFile = grp.Code + "_AWS_" + helperUlti.DatetimeOnlyNumber(to) + ".json";
-                            string path = urlFullPathFolder + nameFile;
-                            try
-                            {
-                                var options = new JsonSerializerOptions { WriteIndented = true };
-                                string jsonString = System.Text.Json.JsonSerializer.Serialize(dataTramKhiTuong, options);
-                                //Create a new file
-                                if (!File.Exists(path))
-                                {
-                                    File.WriteAllText(path, jsonString);
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-
-                            }
-                        }
-                        if (dataTramThuyVan != null && dataTramThuyVan.Count() > 0)
-                        {
-                            string nameFile = grp.Code + "_WL_" + helperUlti.DatetimeOnlyNumber(to) + ".json";
-                            string path = urlFullPathFolder + nameFile;
-                            try
-                            {
-                                var options = new JsonSerializerOptions { WriteIndented = true };
-                                string jsonString = System.Text.Json.JsonSerializer.Serialize(dataTramThuyVan, options);
-                                if (!File.Exists(path))
-                                {
-                                    File.WriteAllText(path, jsonString);
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-
-                            }
-                        }
+                        #endregion
                     }
                 }
             }

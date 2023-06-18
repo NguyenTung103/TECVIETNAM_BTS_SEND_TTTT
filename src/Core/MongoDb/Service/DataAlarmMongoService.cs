@@ -45,5 +45,9 @@ namespace BtsGetwayService.Service
             list = _dataAlarmData.FindPagingOption(i => i.Device_Id==deviceid, 300,0,out long total).OrderByDescending(i => i.DateCreate).ToList();           
             return list;
         }
+        public bool Insert(DataAlarm entity)
+        {
+            return _dataAlarmData.Insert(entity);
+        }
     }
 }

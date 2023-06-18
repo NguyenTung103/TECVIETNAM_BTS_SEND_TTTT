@@ -14,5 +14,6 @@ namespace BtsGetwayService.Interface
         DataAlarm FindByKey(string alarmId);
         List<DataAlarm> GetDataPaging(DateTime fromDate, DateTime toDate, int skip, int limit, int deviceId, out int total);
         List<DataAlarm> GetDataOption(int limit, int deviceid);
+        bool Insert(DataAlarm entity);
     }
 }

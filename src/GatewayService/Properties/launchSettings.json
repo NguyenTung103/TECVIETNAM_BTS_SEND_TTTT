@@ -1,0 +1,10 @@
+﻿{
+  "profiles": {
+    "GatewayService": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

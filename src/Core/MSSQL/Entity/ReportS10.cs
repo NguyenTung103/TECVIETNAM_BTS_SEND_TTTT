@@ -1,12 +1,14 @@
-﻿using Dapper.Contrib.Extensions;
+using Dapper.Contrib.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
-namespace BtsGetwayService.MSSQL.Entity
+namespace bts.udpgateway
 {
-    [Table("ReportDailyTocDoGio")]
-    public class ReportS10
+    [Table("ReportS10")]
+    public partial class ReportS10
     {
         public int ID { get; set; }
         public Nullable<int> DeviceId { get; set; }
@@ -28,5 +30,11 @@ namespace BtsGetwayService.MSSQL.Entity
         public Nullable<double> MRC { get; set; }
         public Nullable<double> MRB { get; set; }
         public Nullable<double> MVC { get; set; }
+        public Nullable<double> MFX { get; set; }
+        public Nullable<double> MFD { get; set; }
+        public Nullable<double> MHD { get; set; }
+        public Nullable<double> MFL { get; set; }
+        public Nullable<double> MFF { get; set; }
+        public Nullable<double> MFV { get; set; }
     }
 }

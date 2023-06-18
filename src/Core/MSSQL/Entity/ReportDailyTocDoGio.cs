@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BtsGetwayService.MSSQL.Entity
+namespace bts.udpgateway
 {
     [Table("ReportDailyTocDoGio")]
     public partial class ReportDailyTocDoGio

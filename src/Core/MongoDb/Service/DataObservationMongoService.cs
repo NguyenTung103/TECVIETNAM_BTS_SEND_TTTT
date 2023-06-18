@@ -1,12 +1,11 @@
-﻿using ES_CapDien.AppCode;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using BtsGetwayService.MongoDb.Entity;
-using Core.MongoDb.Data.Interface;
 using BtsGetwayService.Interface;
+using Core.MongoDb.Data.Interface;
 
 namespace BtsGetwayService.Service
 {
@@ -59,6 +58,10 @@ namespace BtsGetwayService.Service
             list = _dataObservationMongoData.FindPagingOption(i => i.Device_Id == deviceId, 1, 0, out long totalRow).OrderByDescending(i => i.DateCreate).ToList();
             total = Convert.ToInt32(totalRow);
             return list;
+        }        
+        public bool Insert(BtsGetwayService.MongoDb.Entity.Data data)
+        {         
+            return _dataObservationMongoData.Insert(data);           
         }
     }
 }

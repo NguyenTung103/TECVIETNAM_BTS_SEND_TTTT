@@ -20,6 +20,21 @@ namespace bts.udpgateway
         {
 
         }
+        public IEnumerable<Site> GetSite(int deviceid)
+        {
+            string query = string.Format(@"select Name from Site where DeviceId={0}", deviceid);
+            return Query<Site>(query, null);
+        }
+        public void UpdateStatusActive(int deviceid)
+        {
+            string query = string.Format(@"update site set IsActive=1 where DeviceId={0}", deviceid);
+            Execute(query, null);
+        }
+        public void UpdateStatusDisable(int deviceid)
+        {
+            string query = string.Format(@"update site set IsActive=0 where DeviceId={0}", deviceid);
+            Execute(query, null);
+        }
         public IEnumerable<Site> GetListSite(int groupId)
         {
             DynamicParameters listParameter = new DynamicParameters();
@@ -27,6 +42,12 @@ namespace bts.udpgateway
             string query = string.Format(@"select * from Site where Group_Id=@Group_ID and IsActive=1", groupId);
             return Query<Site>(query, listParameter);
         }
-
+        public async Task<Site> GetSiteByDeviceId(int deviceId)
+        {
+            DynamicParameters listParameter = new DynamicParameters();
+            listParameter.Add("@DeviceID", deviceId);
+            string query = string.Format(@"select * from Site where DeviceId=@DeviceID and IsActive=1");
+            return await QueryFirstOrDefaultAsync<Site>(query, listParameter);
+        }
     }
 }

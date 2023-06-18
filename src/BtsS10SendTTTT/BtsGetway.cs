@@ -50,8 +50,10 @@ namespace BtsGetwayService
         {
             List<RegionalGroup> lstGroup = _groupData.GetGroupSend().ToList();
             string appConfigPath = _appSetting.FolderLuuTruFile;
+            int isSendDataTTTT = _appSetting.IsSendTTTT;
             foreach (var grp in lstGroup)
             {
+                DateTime dateTime = from;
                 string userName = grp.FtpAccount.Trim();
                 string password = grp.FtpPassword.Trim();
                 string appConfigFolderTTTT = grp.FtpDirectory.Trim();
@@ -74,34 +76,32 @@ namespace BtsGetwayService
                             {
                                 if (site.DeviceId.HasValue)
                                 {
-                                    var reportS10ByDevice = _reportS10Data.GetByTime(from, to, site.DeviceId.Value);
-                                    if (reportS10ByDevice != null)
+                                    var item = _reportS10Data.GetByTime(from, to, site.DeviceId.Value).LastOrDefault();
+                                    if (item != null)
                                     {
-                                        foreach (var item in reportS10ByDevice)
-                                        {
-                                            ModelFileKhiTuongS10Json modelFileS10Json = new ModelFileKhiTuongS10Json();
-                                            modelFileS10Json.StationNo = item.DeviceId.Value.ToString("D6");
-                                            modelFileS10Json.Datadate = double.Parse(item.DateCreate.Value.ToString("yyyyMMddHHmmss"));
-                                            modelFileS10Json.T2m = item.MTI.Value;
-                                            modelFileS10Json.T2mmax = item.MTX.Value;
-                                            modelFileS10Json.T2mmin = item.MTM.Value;
-                                            modelFileS10Json.Rh2m = item.MHU.Value;
-                                            modelFileS10Json.R2mmax = item.MHX.Value;
-                                            modelFileS10Json.R2mmin = item.MHM.Value;
-                                            modelFileS10Json.PS = item.MAV.Value;
-                                            modelFileS10Json.FF10m = item.MSM.Value;
-                                            modelFileS10Json.DD10m = item.MDM.Value;
-                                            modelFileS10Json.FxFx = item.MSS.Value;
-                                            modelFileS10Json.DxDx = item.MDS.Value;
-                                            modelFileS10Json.DtdateFxDx = item.MHR.Value;
-                                            modelFileS10Json.Rain10m = item.MRT.Value;
-                                            modelFileS10Json.Rain1h = item.MRH.Value;
-                                            modelFileS10Json.Rain19h = item.MRC.Value;
-                                            modelFileS10Json.Rain00h = item.MRB.Value;
-                                            modelFileS10Json.Battery = item.MVC.Value;
-                                            dataTramKhiTuong.Add(modelFileS10Json);
-                                            dateTimeStr = modelFileS10Json.Datadate.ToString();
-                                        }
+                                        ModelFileKhiTuongS10Json modelFileS10Json = new ModelFileKhiTuongS10Json();
+                                        modelFileS10Json.StationNo = item.DeviceId.Value.ToString("D5");
+                                        modelFileS10Json.Datadate = double.Parse(item.DateCreate.Value.ToString("yyyyMMddHHmmss"));
+                                        modelFileS10Json.T2m = Utility.CheckNull(item.MTI);
+                                        modelFileS10Json.T2mmax = Utility.CheckNull(item.MTX);
+                                        modelFileS10Json.T2mmin = Utility.CheckNull(item.MTM);
+                                        modelFileS10Json.Rh2m = Utility.CheckNull(item.MHU);
+                                        modelFileS10Json.R2mmax = Utility.CheckNull(item.MHX);
+                                        modelFileS10Json.R2mmin = Utility.CheckNull(item.MHM);
+                                        modelFileS10Json.PS = Utility.CheckNull(item.MAV);
+                                        modelFileS10Json.FF10m = Utility.CheckNull(item.MSM);
+                                        modelFileS10Json.DD10m = Utility.CheckNull(item.MDM);
+                                        modelFileS10Json.FxFx = Utility.CheckNull(item.MSS);
+                                        modelFileS10Json.DxDx = Utility.CheckNull(item.MDS);
+                                        modelFileS10Json.DtdateFxDx = Utility.CheckNull(item.MHR);
+                                        modelFileS10Json.Rain10m = Utility.CheckNull(item.MRT);
+                                        modelFileS10Json.Rain1h = Utility.CheckNull(item.MRH);
+                                        modelFileS10Json.Rain19h = Utility.CheckNull(item.MRC);
+                                        modelFileS10Json.Rain00h = Utility.CheckNull(item.MRB);
+                                        modelFileS10Json.Battery = Utility.CheckNull(item.MVC);
+                                        dataTramKhiTuong.Add(modelFileS10Json);
+                                        dateTimeStr = modelFileS10Json.Datadate.ToString();
+                                        dateTime = item.DateCreate.Value;
                                     }
                                 }
                             }
@@ -109,18 +109,16 @@ namespace BtsGetwayService
                             {
                                 if (site.DeviceId.HasValue)
                                 {
-                                    var reportS10ByDevice = _reportS10Data.GetByTime(from, to, site.DeviceId.Value);
-                                    if (reportS10ByDevice != null)
+                                    var item = _reportS10Data.GetByTime(from, to, site.DeviceId.Value).LastOrDefault();
+                                    if (item != null)
                                     {
-                                        foreach (var item in reportS10ByDevice)
-                                        {
-                                            ModelFileThuyVanS10Json modelFileS10Json = new ModelFileThuyVanS10Json();
-                                            modelFileS10Json.StationNo = item.DeviceId.Value.ToString("D6");
-                                            modelFileS10Json.Datadate = double.Parse(item.DateCreate.Value.ToString("yyyyMMddHHmmss"));
-                                            modelFileS10Json.WL = 0;
-                                            dataThuyVan.Add(modelFileS10Json);
-                                            dateTimeStr = modelFileS10Json.Datadate.ToString();
-                                        }
+                                        ModelFileThuyVanS10Json modelFileS10Json = new ModelFileThuyVanS10Json();
+                                        modelFileS10Json.StationNo = item.DeviceId.Value.ToString("D5");
+                                        modelFileS10Json.Datadate = double.Parse(item.DateCreate.Value.ToString("yyyyMMddHHmmss"));
+                                        modelFileS10Json.WL = float.Parse(item.MFL == null ? "0" : Math.Round(item.MFL.Value * 100, 2).ToString());
+                                        dataThuyVan.Add(modelFileS10Json);
+                                        dateTimeStr = modelFileS10Json.Datadate.ToString();
+                                        dateTime = item.DateCreate.Value;
                                     }
                                 }
                             }
@@ -128,22 +126,20 @@ namespace BtsGetwayService
                             {
                                 if (site.DeviceId.HasValue)
                                 {
-                                    var reportS10ByDevice = _reportS10Data.GetByTime(from, to, site.DeviceId.Value);
-                                    if (reportS10ByDevice != null)
+                                    var item = _reportS10Data.GetByTime(from, to, site.DeviceId.Value).LastOrDefault();
+                                    if (item != null)
                                     {
-                                        foreach (var item in reportS10ByDevice)
-                                        {
-                                            ModelFileLuongMuaS10Json modelFileS10Json = new ModelFileLuongMuaS10Json();
-                                            modelFileS10Json.StationNo = item.DeviceId.Value.ToString("D6");
-                                            modelFileS10Json.Datadate = double.Parse(item.DateCreate.Value.ToString("yyyyMMddHHmmss"));
-                                            modelFileS10Json.Rain10m = item.MRT.Value;
-                                            modelFileS10Json.Rain1h = item.MRH.Value;
-                                            modelFileS10Json.Rain19h = item.MRC.Value;
-                                            modelFileS10Json.Rain00h = item.MRB.Value;
-                                            modelFileS10Json.Battery = item.MVC.Value;
-                                            dataMua.Add(modelFileS10Json);
-                                            dateTimeStr = modelFileS10Json.Datadate.ToString();
-                                        }
+                                        ModelFileLuongMuaS10Json modelFileS10Json = new ModelFileLuongMuaS10Json();
+                                        modelFileS10Json.StationNo = item.DeviceId.Value.ToString("D6");
+                                        modelFileS10Json.Datadate = double.Parse(item.DateCreate.Value.ToString("yyyyMMddHHmmss"));
+                                        modelFileS10Json.Rain10m = Utility.CheckNull(item.MRT);
+                                        modelFileS10Json.Rain1h = Utility.CheckNull(item.MRH);
+                                        modelFileS10Json.Rain19h = Utility.CheckNull(item.MRC);
+                                        modelFileS10Json.Rain00h = Utility.CheckNull(item.MRB);
+                                        modelFileS10Json.Battery = Utility.CheckNull(item.MVC);
+                                        dataMua.Add(modelFileS10Json);
+                                        dateTimeStr = modelFileS10Json.Datadate.ToString();
+                                        dateTime = item.DateCreate.Value;
                                     }
                                 }
                             }
@@ -151,23 +147,21 @@ namespace BtsGetwayService
                             {
                                 if (site.DeviceId.HasValue)
                                 {
-                                    var reportS10ByDevice = _reportS10Data.GetByTime(from, to, site.DeviceId.Value);
-                                    if (reportS10ByDevice != null)
+                                    var item = _reportS10Data.GetByTime(from, to, site.DeviceId.Value).LastOrDefault();
+                                    if (item != null)
                                     {
-                                        foreach (var item in reportS10ByDevice)
-                                        {
-                                            ModelFileGioS10Json modelFileS10Json = new ModelFileGioS10Json();
-                                            modelFileS10Json.StationNo = item.DeviceId.Value.ToString("D5");
-                                            modelFileS10Json.Datadate = double.Parse(item.DateCreate.Value.ToString("yyyyMMddHHmmss"));
-                                            modelFileS10Json.FF10m = item.MSM.Value;
-                                            modelFileS10Json.DD10m = item.MDM.Value;
-                                            modelFileS10Json.FxFx = item.MSS.Value;
-                                            modelFileS10Json.DxDx = item.MDS.Value;
-                                            modelFileS10Json.DtdateFxDx = item.MHR.Value;
-                                            modelFileS10Json.Battery = item.MVC.Value;
-                                            dataTramGio.Add(modelFileS10Json);
-                                            dateTimeStr = modelFileS10Json.Datadate.ToString();
-                                        }
+                                        ModelFileGioS10Json modelFileS10Json = new ModelFileGioS10Json();
+                                        modelFileS10Json.StationNo = item.DeviceId.Value.ToString("D6");
+                                        modelFileS10Json.Datadate = double.Parse(item.DateCreate.Value.ToString("yyyyMMddHHmmss"));
+                                        modelFileS10Json.FF10m = Utility.CheckNull(item.MSM);
+                                        modelFileS10Json.DD10m = Utility.CheckNull(item.MDM);
+                                        modelFileS10Json.FxFx = Utility.CheckNull(item.MSS);
+                                        modelFileS10Json.DxDx = Utility.CheckNull(item.MDS);
+                                        modelFileS10Json.DtdateFxDx = Utility.CheckNull(item.MHR);
+                                        modelFileS10Json.Battery = Utility.CheckNull(item.MVC);
+                                        dataTramGio.Add(modelFileS10Json);
+                                        dateTimeStr = modelFileS10Json.Datadate.ToString();
+                                        dateTime = item.DateCreate.Value;
                                     }
                                 }
                             }
@@ -175,28 +169,26 @@ namespace BtsGetwayService
                             {
                                 if (site.DeviceId.HasValue)
                                 {
-                                    var reportS10ByDevice = _reportS10Data.GetByTime(from, to, site.DeviceId.Value);
-                                    if (reportS10ByDevice != null)
+                                    var item = _reportS10Data.GetByTime(from, to, site.DeviceId.Value).LastOrDefault();
+                                    if (item != null)
                                     {
-                                        foreach (var item in reportS10ByDevice)
-                                        {
-                                            ModelFileMuaNhietS10Json modelFileS10Json = new ModelFileMuaNhietS10Json();
-                                            modelFileS10Json.StationNo = item.DeviceId.Value.ToString("D6");
-                                            modelFileS10Json.Datadate = double.Parse(item.DateCreate.Value.ToString("yyyyMMddHHmmss"));
-                                            modelFileS10Json.T2m = item.MTI.Value;
-                                            modelFileS10Json.T2mmax = item.MTX.Value;
-                                            modelFileS10Json.T2mmin = item.MTM.Value;
-                                            modelFileS10Json.Rh2m = item.MHU.Value;
-                                            modelFileS10Json.R2mmax = item.MHX.Value;
-                                            modelFileS10Json.R2mmin = item.MHM.Value;
-                                            modelFileS10Json.Rain10m = item.MRT.Value;
-                                            modelFileS10Json.Rain1h = item.MRH.Value;
-                                            modelFileS10Json.Rain19h = item.MRC.Value;
-                                            modelFileS10Json.Rain00h = item.MRB.Value;
-                                            modelFileS10Json.Battery = item.MVC.Value;
-                                            dataMuaNhiet.Add(modelFileS10Json);
-                                            dateTimeStr = modelFileS10Json.Datadate.ToString();
-                                        }
+                                        ModelFileMuaNhietS10Json modelFileS10Json = new ModelFileMuaNhietS10Json();
+                                        modelFileS10Json.StationNo = item.DeviceId.Value.ToString("D5");
+                                        modelFileS10Json.Datadate = double.Parse(item.DateCreate.Value.ToString("yyyyMMddHHmmss"));
+                                        modelFileS10Json.T2m = Utility.CheckNull(item.MTI);
+                                        modelFileS10Json.T2mmax = Utility.CheckNull(item.MTX);
+                                        modelFileS10Json.T2mmin = Utility.CheckNull(item.MTM);
+                                        modelFileS10Json.Rh2m = Utility.CheckNull(item.MHU);
+                                        modelFileS10Json.R2mmax = Utility.CheckNull(item.MHX);
+                                        modelFileS10Json.R2mmin = Utility.CheckNull(item.MHM);
+                                        modelFileS10Json.Rain10m = Utility.CheckNull(item.MRT);
+                                        modelFileS10Json.Rain1h = Utility.CheckNull(item.MRH);
+                                        modelFileS10Json.Rain19h = Utility.CheckNull(item.MRC);
+                                        modelFileS10Json.Rain00h = Utility.CheckNull(item.MRB);
+                                        modelFileS10Json.Battery = Utility.CheckNull(item.MVC);
+                                        dataMuaNhiet.Add(modelFileS10Json);
+                                        dateTimeStr = modelFileS10Json.Datadate.ToString();
+                                        dateTime = item.DateCreate.Value;
                                     }
                                 }
                             }
@@ -209,13 +201,13 @@ namespace BtsGetwayService
                     #endregion
 
                     #region Tạo directory trên server
-                    string urlFullPathFolder = appConfigPath + appConfigFolderTTTT + "\\" + helperUlti.GetDay(to) + "\\";
+                    string urlFullPathFolder = appConfigPath + appConfigFolderTTTT + "\\" + helperUlti.GetDay(dateTime) + "\\";
                     bool exists = Directory.Exists(urlFullPathFolder);
                     if (!exists)
                         Directory.CreateDirectory(urlFullPathFolder);
                     #endregion
 
-                    #region Tạo file trên server và gửi dữ liệu sang TTDL
+                    #region Tạo file trên server và gửi dữ liệu sang TTDL                    
                     if (dataTramKhiTuong != null && dataTramKhiTuong.Count() > 0)
                     {
                         string nameFile = grp.Code + "_" + Constant.MaKhiTuong + "_" + dateTimeStr + ".json";
@@ -236,7 +228,10 @@ namespace BtsGetwayService
                         }
                         try
                         {
-                            GetOrCreateFolder(appConfigFolderTTTT, to, nameFile, path, userName, password, host);
+                            if (isSendDataTTTT == 1)
+                            {
+                                GetOrCreateFolder(appConfigFolderTTTT, dateTime, nameFile, path, userName, password, host);
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -263,7 +258,10 @@ namespace BtsGetwayService
                         }
                         try
                         {
-                            GetOrCreateFolder(appConfigFolderTTTT, to, nameFile, path, userName, password, host);
+                            if (isSendDataTTTT == 1)
+                            {
+                                GetOrCreateFolder(appConfigFolderTTTT, dateTime, nameFile, path, userName, password, host);
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -272,7 +270,7 @@ namespace BtsGetwayService
                     }
                     if (dataMua != null && dataMua.Count() > 0)
                     {
-                        string nameFile = grp.Code + "_" + Constant.DoMua + "_" + dateTimeStr + ".json";
+                        string nameFile = grp.Code + "_" + Constant.MaDoMua + "_" + dateTimeStr + ".json";
                         string path = urlFullPathFolder + nameFile;
                         try
                         {
@@ -290,7 +288,10 @@ namespace BtsGetwayService
                         }
                         try
                         {
-                            GetOrCreateFolder(appConfigFolderTTTT, to, nameFile, path, userName, password, host);
+                            if (isSendDataTTTT == 1)
+                            {
+                                GetOrCreateFolder(appConfigFolderTTTT, dateTime, nameFile, path, userName, password, host);
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -299,7 +300,7 @@ namespace BtsGetwayService
                     }
                     if (dataMuaNhiet != null && dataMuaNhiet.Count() > 0)
                     {
-                        string nameFile = grp.Code + "_" + Constant.MuaNhiet + "_" + dateTimeStr + ".json";
+                        string nameFile = grp.Code + "_" + Constant.MaMuaNhiet + "_" + dateTimeStr + ".json";
                         string path = urlFullPathFolder + nameFile;
                         try
                         {
@@ -317,7 +318,10 @@ namespace BtsGetwayService
                         }
                         try
                         {
-                            GetOrCreateFolder(appConfigFolderTTTT, to, nameFile, path, userName, password, host);
+                            if (isSendDataTTTT == 1)
+                            {
+                                GetOrCreateFolder(appConfigFolderTTTT, dateTime, nameFile, path, userName, password, host);
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -326,12 +330,12 @@ namespace BtsGetwayService
                     }
                     if (dataThuyVan != null && dataThuyVan.Count() > 0)
                     {
-                        string nameFile = grp.Code + "_" + Constant.ThuyVan + "_" + dateTimeStr + ".json";
+                        string nameFile = grp.Code + "_" + Constant.MaThuyVan + "_" + dateTimeStr + ".json";
                         string path = urlFullPathFolder + nameFile;
                         try
                         {
                             var options = new JsonSerializerOptions { WriteIndented = true };
-                            string jsonString = System.Text.Json.JsonSerializer.Serialize(dataMuaNhiet, options);
+                            string jsonString = System.Text.Json.JsonSerializer.Serialize(dataThuyVan, options);
                             //Create a new file
                             if (!File.Exists(path))
                             {
@@ -344,7 +348,10 @@ namespace BtsGetwayService
                         }
                         try
                         {
-                            GetOrCreateFolder(appConfigFolderTTTT, to, nameFile, path, userName, password, host);
+                            if (isSendDataTTTT == 1)
+                            {
+                                GetOrCreateFolder(appConfigFolderTTTT, dateTime, nameFile, path, userName, password, host);
+                            }
                         }
                         catch (Exception ex)
                         {

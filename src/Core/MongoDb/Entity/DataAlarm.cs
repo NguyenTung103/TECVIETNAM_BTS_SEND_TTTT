@@ -15,6 +15,8 @@ namespace BtsGetwayService.MongoDb.Entity
         public DateTime DateCreate { get; set; }
         [BsonElement("IsSEQ")]
         public bool IsSEQ { get; set; }
+        [BsonElement("Content")]
+        public string Content { get; set; }
         [BsonElement("Device_Id")]
         public int Device_Id { get; set; }
         [BsonElement("AMATI")]

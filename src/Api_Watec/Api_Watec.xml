@@ -1,0 +1,730 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ApiAppVOV</name>
+    </assembly>
+    <members>
+        <member name="T:ApiAppVOV.Controllers.BaseController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:ApiAppVOV.Controllers.BaseController._loggService">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.BaseController.#ctor(Service.LoggService)">
+            <summary>
+            
+            </summary>
+            <param name="loggService"></param>
+        </member>
+        <member name="T:ApiAppVOV.Controllers.CacheController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.CacheController.#ctor(Core.IAsyncCacheService,Service.LoggService)">
+            <summary>
+            
+            </summary>
+            <param name="asyncCacheService"></param>
+            <param name="loggService"></param>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.CacheController.RemoveCache">
+            <summary>
+            
+            </summary>        
+            <returns></returns>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.CacheController.RemoveCachekey(System.String)">
+            <summary>
+            
+            </summary>        
+            <returns></returns>
+        </member>
+        <member name="T:ApiAppVOV.Controllers.ChannelController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.ChannelController.#ctor(Infrastructure.Service.ChannelService,Service.LoggService)">
+            <summary>
+            
+            </summary>
+            <param name="channelService"></param>
+            <param name="loggService"></param>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.ChannelController.ListLanguage">
+            <summary>
+            Lấy danh sách ngôn ngữ các kênh
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.ChannelController.GetChannelByCode(System.String)">
+            <summary>
+            Lấy danh sách kênh theo mã đơn vị
+            </summary>
+            <param name="code"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.ChannelController.ListChannelByTime">
+            <summary>
+            Lấy danh sách kênh theo thời gian hiện tại
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.ChannelController.GetAllChannel(System.Int32)">
+            <summary>
+            Lấy danh sách kênh theo kiểu kênh
+            </summary>
+            <param name="type">1: đơn vị có nhiều kênh
+                               2: đơn vị ít kênh</param>
+            <returns></returns>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.ChannelController.ListSchedule(System.String,System.String,System.String)">
+            <summary>
+            Lấy danh sách lịch phát sóng theo đơn vị và thời gian 
+            </summary>
+            <param name="code">đơn vị</param>
+            <param name="codeLanguage">hệ ngôn ngữ</param>
+            <param name="date">ngày lịch phát sóng (dd-MM-yyyy)</param>
+            <returns></returns>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.ChannelController.SearchLichPhatSong(System.String,System.String,System.String,System.String,System.String,System.Int32,System.Int32)">
+            <summary>
+            Tìm kiếm lịch phát sóng theo đơn vị và thời gian 
+            </summary>
+            <param name="codeDonVi">đơn vị</param>
+            <param name="codeLanguage">hệ ngôn ngữ</param>
+            <param name="strSearch">Chuỗi tìm kiếm</param>
+            <param name="from">Từ ngày (dd-MM-yyyy)</param>
+            <param name="to">Đến ngày (dd-MM-yyyy)</param>
+            <param name="take">Số bản ghi lấy</param>
+            <param name="skip">Số bản ghi bỏ qua</param>
+            <returns></returns>
+        </member>
+        <member name="T:ApiAppVOV.Controllers.ChuyenMucTinTucController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.ChuyenMucTinTucController.#ctor(Infrastructure.Service.CategoryService,Service.LoggService)">
+            <summary>
+            
+            </summary>
+            <param name="categoryService"></param>
+            <param name="loggService"></param>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.ChuyenMucTinTucController.GetCategoryByCode(System.String)">
+            <summary>
+            Lấy danh sách chuyên mục tin tức theo đơn vị
+            </summary>
+            <param name="code"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.ChuyenMucTinTucController.GetChildCategory(System.Int32)">
+            <summary>
+            Lấy danh sách chuyên mục tin tức con của một chuyên mục
+            </summary>
+            <param name="categoryID"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ApiAppVOV.Controllers.CommentController">
+            <summary>
+            Danh sách xem lại
+            </summary>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.CommentController.#ctor(Infrastructure.Service.FeedBackNewsService,Infrastructure.Service.UserAccountsService,Infrastructure.Service.NewsService,Infrastructure.FilterAuthen.AuthenUser,Service.LoggService)">
+            <summary>
+            
+            </summary>
+            <param name="feedBackNewsService"></param>        
+            <param name="userAccountsService"></param>        
+            <param name="newsService"></param>        
+            <param name="authenUser"></param>        
+            <param name="loggService"></param>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.CommentController.GetListComment(System.Guid,System.Int32,System.Int32)">
+            <summary>
+            Lấy danh sách tin bài đã comment theo tài khoản
+            </summary>
+            <param name="UserToken">ID người dùng</param>
+            <param name="take">Số bản ghi lấy</param>
+            <param name="skip">Số bản ghi bỏ qua</param>
+            <returns></returns>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.CommentController.GetDsCommentByNewsID(System.Int32,System.Guid,System.Nullable{System.Boolean},System.Int32,System.Int32)">
+            <summary>
+            Lấy danh sách comment theo tài khoản
+            </summary>
+            <param name="UserToken">ID người dùng</param>
+            <param name="isGetAll">Lấy tất cả comment</param>
+            <param name="newsId">ID tin bài</param>
+            <param name="take">Số bản ghi lấy</param>
+            <param name="skip">Số bản ghi bỏ qua</param>
+            <returns></returns>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.CommentController.PostDeviceInfo(System.Guid,Core.Model.CommentModel)">
+            <summary>
+            Coment tin bài
+            </summary>
+            <param name="info"></param>
+            <param name="UserToken"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ApiAppVOV.Controllers.DonViController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.DonViController.#ctor(Infrastructure.Service.DmDonViService,Service.LoggService)">
+            <summary>
+            
+            </summary>
+            <param name="dmDonViService"></param>
+            <param name="loggService"></param>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.DonViController.ListDMDonVi">
+            <summary>
+            Lấy danh sách đơn vị 
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:ApiAppVOV.Controllers.FileController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.FileController.#ctor(Infrastructure.Service.FileService,Service.LoggService)">
+            <summary>
+            
+            </summary>
+            <param name="fileService"></param>
+            <param name="loggService"></param>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.FileController.GetVideo(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Lấy danh sách file 
+            </summary>
+            <param name="skip">Số bản ghi bỏ qua</param>
+            <param name="take">Số bản ghi lấy</param>
+            <param name="typeNews">Kiểu tin ID</param>
+            <returns></returns>
+        </member>
+        <member name="T:ApiAppVOV.Controllers.LoginController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.LoginController.#ctor(Infrastructure.Service.UserAccountsService,Infrastructure.Service.PushNotificationService,Infrastructure.Service.FeedBackNewsService,Infrastructure.Service.NewsService,Infrastructure.FilterAuthen.AuthenUser,Service.LoggService)">
+            <summary>
+            
+            </summary>        
+            <param name="pushNotificationService"></param>
+            <param name="userAccountsService"></param>
+            <param name="feedBackNewsService"></param>
+            <param name="newsService"></param>
+            <param name="loggService"></param>
+            <param name="authenUser"></param>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.LoginController.GetUserInfo(System.Guid)">
+            <summary>
+             Lấy thông tin user
+            </summary>
+            <param name="UserToken">UserToken</param>      
+            <returns></returns>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.LoginController.GetUser(Core.Model.UserSocialLoginModel)">
+            <summary>
+             Lấy thông tin user từ facebookId và googleId
+            </summary>
+            <param name="user">user info</param>      
+            <returns></returns>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.LoginController.GetUserByEmailAndPass(System.String,System.String,System.String,System.String)">
+            <summary>
+             Lấy thông tin user theo email và password
+            </summary>
+            <param name="email">email</param>
+            <param name="password">password</param>
+            <param name="deviceId">ID thiết bị</param>
+            <param name="tokenFireBase">token fire base</param>
+            <returns></returns>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.LoginController.UpdateUser(System.Guid,Core.Model.UserUpdateModel)">
+            <summary>
+            Cập nhật thông tin user
+            </summary>
+            <param name="user"></param>
+            <param name="UserToken"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.LoginController.XacThucEmail(Core.Model.UserVerityModel)">
+            <summary>
+            Xác thực tài khoản
+            </summary>
+            <param name="user"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.LoginController.RegisUser(Core.Model.UserModel)">
+            <summary>
+            Đăng ký user
+            </summary>
+            <param name="user"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.LoginController.ChangePassword(System.Guid,Core.Model.ChanePasswordModel)">
+            <summary>
+            Đổi mật khẩu
+            </summary>
+            <param name="info"></param>
+            <param name="UserToken"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.LoginController.ForgetPassword(Core.Model.ForgetPasswordModel)">
+            <summary>
+            Quên mật khẩu
+            </summary>
+            <param name="info"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.LoginController.Logout(System.Guid)">
+            <summary>
+            Đăng xuất
+            </summary>
+            <param name="UserToken"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.LoginController.GetUserOnline">
+            <summary>
+            Get User đang online
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:ApiAppVOV.Controllers.NewsController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.NewsController.#ctor(Infrastructure.Service.NewsService,Infrastructure.FilterAuthen.AuthenUser,Infrastructure.Service.UserAccountsService,Service.LoggService)">
+            <summary>
+            
+            </summary>
+            <param name="newsService"></param>
+            <param name="userAccountsService"></param>
+            <param name="loggService"></param>
+            <param name="authenUser"></param>    
+        </member>
+        <member name="M:ApiAppVOV.Controllers.NewsController.GetNewsByOption(System.Nullable{System.Int32},System.Nullable{System.Int32},System.String,System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Int32,System.Int32)">
+            <summary>
+            Lấy tin bài theo tiêu chí
+            </summary>
+            <param name="categoryId">Chuyên mục id</param>
+            <param name="typeNews">Kiểu tin id</param>
+            <param name="donViCode">Mã đơn vị</param>
+            <param name="isHot">Là tin hot</param>
+            <param name="isNew">Là tin mới</param>
+            <param name="take">Số bản ghi lấy</param>
+            <param name="skip">Số bản ghi bỏ qua</param>
+            <returns></returns>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.NewsController.Search(System.String,System.String,System.String,System.String,System.Int32,System.Int32)">
+            <summary>
+            Tìm kiếm tin bài
+            </summary>
+            <param name="skip">Số bản ghi bỏ qua</param>
+            <param name="take">Số bản ghi lấy</param>
+            <param name="from">Từ ngày (dd-MM-yyyy)</param>
+            <param name="to">Đến ngày (dd-MM-yyyy)</param>
+            <param name="keyword">Từ khóa</param>
+            <param name="donViCode">Mã đơn vị</param>
+            <returns></returns>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.NewsController.GetDetails(System.Int32,System.Guid)">
+            <summary>
+            Tin tức chi tiết v2
+            </summary>
+            <param name="id">tin bài ID</param>
+            <param name="UserToken">UserToken</param>
+            <returns></returns>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.NewsController.GetInfoApp">
+            <summary>
+            Lấy thông tin app
+            </summary>        
+            <returns></returns>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.NewsController.UpdateView(System.Int32)">
+            <summary>
+            Cập nhật lượt đọc
+            </summary>
+            <param name="id">Tin tức ID</param>
+            <returns></returns>
+        </member>
+        <member name="T:ApiAppVOV.Controllers.ReviewController">
+            <summary>
+            Danh sách xem lại
+            </summary>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.ReviewController.#ctor(Infrastructure.Service.UserAccount_NewsService,Infrastructure.Service.UserAccountsService,Infrastructure.FilterAuthen.AuthenUser,Service.LoggService)">
+            <summary>
+            
+            </summary>
+            <param name="userAccount_NewsService"></param>        
+            <param name="userAccountsService"></param>        
+            <param name="loggService"></param>
+            <param name="authenUser"></param>      
+        </member>
+        <member name="M:ApiAppVOV.Controllers.ReviewController.PostUserNews(System.Guid,Core.Model.InfoDeviceModel)">
+            <summary>
+            Lưu tin tức theo user
+            </summary>
+            <param name="info"></param>
+            <param name="UserToken"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.ReviewController.GetListNewsByUser(System.Guid,System.Int32,System.Int32)">
+            <summary>
+            Lấy danh sách tin đã lưu theo user 
+            </summary>
+            <param name="UserToken"></param>       
+            <param name="take"></param>       
+            <param name="skip"></param>       
+            <returns></returns>
+        </member>
+        <member name="T:ApiAppVOV.Controllers.ThematicController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.ThematicController.#ctor(Infrastructure.Service.ThematicService,Infrastructure.FilterAuthen.AuthenUser,Service.LoggService)">
+            <summary>
+            
+            </summary>
+            <param name="thematicService"></param>
+            <param name="loggService"></param>
+            <param name="authenUser"></param>  
+        </member>
+        <member name="M:ApiAppVOV.Controllers.ThematicController.GetAll(System.Int32,System.Int32)">
+            <summary>
+            Lấy thông tin tất cả chuyên đề
+            </summary>
+            <param name="skip">Số bản ghi bỏ qua</param>
+            <param name="take">Số bản ghi lấy</param>
+            <returns></returns>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.ThematicController.GetChuyenDeVaTinTuc">
+            <summary>
+            Lấy thông tin tất cả chuyên đề
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.ThematicController.GetNewsChuyenDe(System.Int32,System.Int32,System.Nullable{System.Int32})">
+            <summary>
+            Lấy tin tức theo chuyên đề
+            </summary>
+            <param name="skip">Số bản ghi bỏ qua</param>
+            <param name="take">Số bản ghi lấy</param>
+            <param name="ThemaId">Chuyên đề ID</param>
+            <returns></returns>
+        </member>
+        <member name="T:ApiAppVOV.Controllers.ThongBaoController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ApiAppVOV.Controllers.ThongBaoController.#ctor(Infrastructure.Service.PushNotificationService,Infrastructure.Service.UserAccountsService,Infrastructure.FilterAuthen.AuthenUser,Service.LoggService)">
+            <summary>
+            
+            </summary>
+            <param name="pushNotificationService"></param>
+            <param name="userAccountsService"></param>
+            <param name="loggService"></param>
+            <param name="authenUser"></param>  
+        </member>
+        <member name="M:ApiAppVOV.Controllers.ThongBaoController.PostDeviceInfo(System.Guid,Core.Model.DeviceModel)">
+            <summary>
+            Thêm mới cập nhật thiết bị
+            </summary>
+            <param name="info"></param>
+            <param name="UserToken"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ApiAppVOV.AddServiceAndData">
+            <summary>
+            Mở rộng cấu hình title cùng các kiểu
+            </summary>
+        </member>
+        <member name="M:ApiAppVOV.AddServiceAndData.AddRespository(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            
+            </summary>
+            <param name="services"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ApiAppVOV.AddServiceAndData.AddService(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            
+            </summary>
+            <param name="services"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ApiAppVOV.FilterAttributes.ExceptionFilter">
+            <summary>
+            Lớp này xử lý ghi log toàn bộ các exception trong hệ thống
+            </summary>
+        </member>
+        <member name="M:ApiAppVOV.FilterAttributes.ExceptionFilter.OnException(Microsoft.AspNetCore.Mvc.Filters.ExceptionContext)">
+            <summary>
+            Xử lý khi yêu cầu phía client đến máy chủ và máy chủ xử lý bị lỗi
+            </summary>
+            <param name="context">Lỗi phát sinh</param>
+        </member>
+        <member name="T:ApiAppVOV.SwaggerAddKeyHeader">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ApiAppVOV.SwaggerAddKeyHeader.Apply(Microsoft.OpenApi.Models.OpenApiOperation,Swashbuckle.AspNetCore.SwaggerGen.OperationFilterContext)">
+            <summary>
+            Áp dụng khóa cho api
+            </summary>
+            <param name="operation"></param>
+            <param name="context"></param>
+        </member>
+        <member name="T:ApiAppVOV.SwaggerServiceExtensions">
+            <summary>
+            Mở rộng cấu hình title cùng các kiểu
+            </summary>
+        </member>
+        <member name="M:ApiAppVOV.SwaggerServiceExtensions.AddSwaggerDocumentation(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            
+            </summary>
+            <param name="services"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ApiAppVOV.SwaggerServiceExtensions.UseSwaggerDocumentation(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            
+            </summary>
+            <param name="app"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ApiAppVOV.Logging.ILoggingService">
+            <summary>
+            Lớp chứa toàn bộ phương thức log trong hệ thống
+            </summary>
+        </member>
+        <member name="M:ApiAppVOV.Logging.ILoggingService.Info(System.String,System.String)">
+            <summary>
+            Hàm ghi lỗi log dạng info
+            </summary>
+            <param name="message">Nội dung ngắn</param>
+            <param name="fullMessage">Nội đầy đủ</param>
+        </member>
+        <member name="M:ApiAppVOV.Logging.ILoggingService.InfoAsync(System.String,System.String)">
+            <summary>
+            Hàm ghi lỗi log dạng info
+            </summary>
+            <param name="message">Nội dung ngắn</param>
+            <param name="fullMessage">Nội đầy đủ</param>
+        </member>
+        <member name="M:ApiAppVOV.Logging.ILoggingService.Error(System.Exception)">
+            <summary>
+            Hàm ghi lỗi log lỗi
+            </summary>
+            <param name="ex">Một error</param>
+        </member>
+        <member name="M:ApiAppVOV.Logging.ILoggingService.ErrorAsync(System.Exception)">
+            <summary>
+            Hàm ghi lỗi log lỗi
+            </summary>
+            <param name="ex">Một error</param>
+        </member>
+        <member name="M:ApiAppVOV.Logging.ILoggingService.Warn(System.String,System.String)">
+            <summary>
+            Hàm ghi cảnh báo trên hệ thống
+            </summary>
+            <param name="message">Tiêu đề ngắn</param>
+            <param name="fullMessage">Nội đầy đủ</param>
+        </member>
+        <member name="M:ApiAppVOV.Logging.ILoggingService.WarnAsync(System.String,System.String)">
+            <summary>
+            Hàm ghi cảnh báo trên hệ thống
+            </summary>
+            <param name="message">Tiêu đề ngắn</param>
+            <param name="fullMessage">Nội đầy đủ</param>
+        </member>
+        <member name="M:ApiAppVOV.Logging.ILoggingService.Debug(System.String,System.String)">
+            <summary>
+            Hàm ghi Debug trên hệ thống
+            </summary>
+            <param name="message">Tiêu đề ngắn</param>
+            <param name="fullMessage">Nội đầy đủ</param>
+        </member>
+        <member name="M:ApiAppVOV.Logging.ILoggingService.DebugAsync(System.String,System.String)">
+            <summary>
+            Hàm ghi Debug trên hệ thống
+            </summary>
+            <param name="message">Tiêu đề ngắn</param>
+            <param name="fullMessage">Nội đầy đủ</param>
+        </member>
+        <member name="M:ApiAppVOV.Logging.ILoggingService.Fatal(System.String,System.String)">
+            <summary>
+            Hàm ghi Fatal trên hệ thống
+            </summary>
+            <param name="message">Tiêu đề ngắn</param>
+            <param name="fullMessage">Nội đầy đủ</param>
+        </member>
+        <member name="M:ApiAppVOV.Logging.ILoggingService.FatalAsync(System.String,System.String)">
+            <summary>
+            Hàm ghi Fatal trên hệ thống
+            </summary>
+            <param name="message">Tiêu đề ngắn</param>
+            <param name="fullMessage">Nội đầy đủ</param>
+        </member>
+        <member name="T:ApiAppVOV.Logging.Log4Configure">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ApiAppVOV.Logging.Log4Configure.AddLog4net(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Đăng ký log cho log4net
+            </summary>
+            <param name="services">nhà chứa Dịch vụ</param>
+        </member>
+        <member name="T:ApiAppVOV.Logging.Log4Service">
+            <summary>
+            Dịch vụ ghi log ra file
+            Chú ý trước khi dùng phải load cấu hình trước. Thường đặt ở application start
+            XmlConfigurator.Configure(LogManager.CreateRepository(Assembly.GetEntryAssembly(), typeof(log4net.Repository.Hierarchy.Hierarchy)), File.OpenRead("log4net.config"));
+            </summary>
+        </member>
+        <member name="M:ApiAppVOV.Logging.Log4Service.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ApiAppVOV.Logging.Log4Service.Info(System.String,System.String)">
+            <summary>
+            Hàm ghi lỗi log dạng info
+            </summary>
+            <param name="message">Nội dung ngắn</param>
+            <param name="fullMessage">Nội đầy đủ</param>
+        </member>
+        <member name="M:ApiAppVOV.Logging.Log4Service.InfoAsync(System.String,System.String)">
+            <summary>
+            Hàm ghi lỗi log dạng info
+            </summary>
+            <param name="message">Nội dung ngắn</param>
+            <param name="fullMessage">Nội đầy đủ</param>
+        </member>
+        <member name="M:ApiAppVOV.Logging.Log4Service.Error(System.Exception)">
+            <summary>
+            Hàm ghi lỗi log lỗi
+            </summary>
+            <param name="ex">Một error</param>
+        </member>
+        <member name="M:ApiAppVOV.Logging.Log4Service.ErrorAsync(System.Exception)">
+            <summary>
+            Hàm ghi lỗi log lỗi
+            </summary>
+            <param name="ex">Một error</param>
+        </member>
+        <member name="M:ApiAppVOV.Logging.Log4Service.Warn(System.String,System.String)">
+            <summary>
+            Hàm ghi cảnh báo trên hệ thống
+            </summary>
+            <param name="message">Tiêu đề ngắn</param>
+            <param name="fullMessage">Nội đầy đủ</param>
+        </member>
+        <member name="M:ApiAppVOV.Logging.Log4Service.WarnAsync(System.String,System.String)">
+            <summary>
+            Hàm ghi cảnh báo trên hệ thống
+            </summary>
+            <param name="message">Tiêu đề ngắn</param>
+            <param name="fullMessage">Nội đầy đủ</param>
+        </member>
+        <member name="M:ApiAppVOV.Logging.Log4Service.Debug(System.String,System.String)">
+            <summary>
+            Hàm ghi Debug trên hệ thống
+            </summary>
+            <param name="message">Tiêu đề ngắn</param>
+            <param name="fullMessage">Nội đầy đủ</param>
+        </member>
+        <member name="M:ApiAppVOV.Logging.Log4Service.DebugAsync(System.String,System.String)">
+            <summary>
+            Hàm ghi Debug trên hệ thống
+            </summary>
+            <param name="message">Tiêu đề ngắn</param>
+            <param name="fullMessage">Nội đầy đủ</param>
+        </member>
+        <member name="M:ApiAppVOV.Logging.Log4Service.Fatal(System.String,System.String)">
+            <summary>
+            Hàm ghi Fatal trên hệ thống
+            </summary>
+            <param name="message">Tiêu đề ngắn</param>
+            <param name="fullMessage">Nội đầy đủ</param>
+        </member>
+        <member name="M:ApiAppVOV.Logging.Log4Service.FatalAsync(System.String,System.String)">
+            <summary>
+            Hàm ghi Fatal trên hệ thống
+            </summary>
+            <param name="message">Tiêu đề ngắn</param>
+            <param name="fullMessage">Nội đầy đủ</param>
+        </member>
+        <member name="T:ApiAppVOV.Program">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ApiAppVOV.Program.Main(System.String[])">
+            <summary>
+            
+            </summary>
+            <param name="args"></param>
+        </member>
+        <member name="M:ApiAppVOV.Program.CreateHostBuilder(System.String[])">
+            <summary>
+            
+            </summary>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ApiAppVOV.Startup">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ApiAppVOV.Startup.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            
+            </summary>
+            <param name="configuration"></param>
+        </member>
+        <member name="P:ApiAppVOV.Startup.Configuration">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ApiAppVOV.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            
+            </summary>
+            <param name="services"></param>
+        </member>
+        <member name="M:ApiAppVOV.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment,Infrastructure.Service.ISetTokenService,ApiAppVOV.Logging.ILoggingService)">
+            <summary>
+            
+            </summary>
+            <param name="app"></param>
+            <param name="env"></param>
+            <param name="setTokenService"></param>
+            <param name="loggingService"></param>
+        </member>
+    </members>
+</doc>
