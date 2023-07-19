@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -26,6 +27,7 @@ namespace Infrastructure.Udp
         public readonly ISiteData _siteData;
         public readonly AppSetting _appSetting;
         private readonly ILoggingService _loggingService;
+        public readonly ICommandData _commandData;
 
         public readonly IDataObservationService _dataObservationMongoService;
         public readonly IDataAlarmService _dataAlarmService;
@@ -40,6 +42,7 @@ namespace Infrastructure.Udp
         public UdpService(IOptions<AppSetting> option,
             IGroupData groupData,
             ISiteData siteData,
+            ICommandData commandData,
             ISMSServerData sMSServerData,
             IObservationData observationData,
             IRegisterSMSData registerSMSData,
@@ -53,6 +56,7 @@ namespace Infrastructure.Udp
             _appSetting = option.Value;
             _groupData = groupData;
             _siteData = siteData;
+            _commandData = commandData;
             _sMSServerData = sMSServerData;
             _observationData = observationData;
             _registerSMSData = registerSMSData;
@@ -125,6 +129,26 @@ namespace Infrastructure.Udp
                 //XtraLog.Write($"[GET:RESULT] Insert mongo :{ex.Message}, {ex.StackTrace}", LogLevel.INFO, "Integrator.Insert");
                 return new ReturnInfo(ReturnCode.Success, (string)null, (object)null);
             }
+        }
+        public ReturnInfo SendCommand(string message, IPEndPoint endPoint, UdpClient udpClient)
+        {
+            string[] strArray = message.Split(';');
+            string s1 = strArray[0].Split('=')[1];
+            int deviceId = int.Parse(s1);
+            var command = _commandData.GetAllCommandByDeviceId(deviceId).FirstOrDefault();
+            if (command != null)
+            {
+                string commandStr = command.Command_Content.Trim();
+                byte[] dgram = Encoding.ASCII.GetBytes(commandStr);
+                int result = udpClient.Send(dgram, dgram.Length, endPoint);
+                command.Status = true;
+                command.UpdateDay = DateTime.Now;
+                if (result > 0)
+                {
+                    _commandData.Update(command);
+                }
+            }
+            return new ReturnInfo(ReturnCode.Success, (string)null, (object)null);
         }
         #region SQL and Mongo               
 

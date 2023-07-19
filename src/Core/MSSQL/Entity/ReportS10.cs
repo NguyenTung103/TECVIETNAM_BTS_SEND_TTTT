@@ -1,4 +1,4 @@
-using Dapper.Contrib.Extensions;
+﻿using Dapper.Contrib.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,5 +36,9 @@ namespace bts.udpgateway
         public Nullable<double> MFL { get; set; }
         public Nullable<double> MFF { get; set; }
         public Nullable<double> MFV { get; set; }
+        // Hải văn
+        public Nullable<double> MTS { get; set; }
+        public Nullable<double> MEC { get; set; }
+        public Nullable<double> MEV { get; set; }
     }
 }

@@ -49,7 +49,7 @@ namespace GatewayApi.Controllers
                 result.Message = "Thành công";
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 result.Status = 500;
                 result.Data = model.Message;

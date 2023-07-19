@@ -18,4 +18,10 @@ namespace Core.Setting
         public string ApiWatecKey { get; set; }
         public string ApiWatecUrl { get; set; }
     }
+    public class AppSettingUDP
+    {
+        public int UdpPort { get; set; }        
+        public bool ToDatabase { get; set; }        
+        public bool IsUseRabbitMQ { get; set; }        
+    }
 }

@@ -232,6 +232,16 @@ namespace Infrastructure.Udp
                         case "MFV":
                             dataMongo.MFV = GetValue(s2);
                             break;
+                            // Hải văn
+                        case "MTS":
+                            dataMongo.MFL = GetValue(s2);
+                            break;
+                        case "MEC":
+                            dataMongo.MFF = GetValue(s2);
+                            break;
+                        case "MEV":
+                            dataMongo.MFV = GetValue(s2);
+                            break;
                     }
                 }
                 catch (Exception)

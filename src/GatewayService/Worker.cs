@@ -17,7 +17,7 @@ namespace GatewayService
         private readonly ILogger<Worker> _logger;
         private readonly IWorkerMessageQueueService _workerMessageQueueService;
         private readonly IMasterMessageQueueService _masterMessageQueueService;
-        private readonly IUdpService _udpService;
+        private readonly IUdpService _udpService;        
         public Worker(ILogger<Worker> logger,
             IWorkerMessageQueueService workerMessageQueueService,
             IUdpService udpService,

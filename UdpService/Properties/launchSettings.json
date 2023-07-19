@@ -1,0 +1,10 @@
+﻿{
+  "profiles": {
+    "UdpService": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
