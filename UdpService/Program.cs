@@ -32,6 +32,7 @@ namespace UdpService
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.Configure<Connections>(hostContext.Configuration.GetSection("Connections"));
+                    services.Configure<AppSettingUDP>(hostContext.Configuration.GetSection("AppSettingUDP"));
                     services.Configure<WorkerRabbitmqConnection>(hostContext.Configuration.GetSection("WorkerRabbitmqConnection"));
                     services.Configure<MasterRabbitmqConnection>(hostContext.Configuration.GetSection("MasterRabbitmqConnection"));
                     services.AddSingleton<IMasterMessageQueueService, MasterRabbitmqService>();

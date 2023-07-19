@@ -118,5 +118,15 @@ namespace BtsGetwayService.MongoDb.Entity
 
         [BsonElement("BWS")]
         public double BWS { get; set; }
+
+        //Hải văn
+        [BsonElement("BTS")]
+        public double BTS { get; set; }
+
+        [BsonElement("BEC")]
+        public double BEC { get; set; }
+
+        [BsonElement("BEV")]
+        public double BEV { get; set; }     
     }
 }

@@ -298,6 +298,18 @@ namespace Infrastructure.Udp
                  {
                   "BVC",
                   "Tốc độ dòng chảy"
+                },
+                {
+                  "BTS",
+                  "Nhiệt độ muối"
+                },
+                {
+                  "BEC",
+                  "Độ dẫn điện"
+                },
+                {
+                  "BEV",
+                  "Độ bốc hơi"
                 }
               };
             string[] strArray = message.Split(';');
@@ -409,6 +421,15 @@ namespace Infrastructure.Udp
                         break;
                     case "BVC":
                         dataMongo.BVC = s2 == null ? 2.0 : double.Parse(s2, (IFormatProvider)CultureInfo.InvariantCulture);
+                        break;
+                    case "BTS":
+                        dataMongo.BTS = s2 == null ? 2.0 : double.Parse(s2, (IFormatProvider)CultureInfo.InvariantCulture);
+                        break;
+                    case "BEC":
+                        dataMongo.BEC = s2 == null ? 2.0 : double.Parse(s2, (IFormatProvider)CultureInfo.InvariantCulture);
+                        break;
+                    case "BEV":
+                        dataMongo.BEV = s2 == null ? 2.0 : double.Parse(s2, (IFormatProvider)CultureInfo.InvariantCulture);
                         break;
                 }
             }

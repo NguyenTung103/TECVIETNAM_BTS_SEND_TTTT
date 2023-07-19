@@ -27,20 +27,20 @@ namespace UdpService
         static private UdpClient _udpClient = null;
         static private IPEndPoint _endpoint = null;
         private AppSettingUDP _appSettingUDP;
-        public readonly IWorkerMessageQueueService _workerMessageQueueService;
-        public readonly IMasterMessageQueueService _masterMessageQueueService;
+        //public readonly IWorkerMessageQueueService _workerMessageQueueService;
+        //public readonly IMasterMessageQueueService _masterMessageQueueService;
         public Worker(ILogger<Worker> logger,
             IUdpService udpService,
-            IWorkerMessageQueueService workerMessageQueueService,
-            IMasterMessageQueueService masterMessageQueueService,
+            //IWorkerMessageQueueService workerMessageQueueService,
+            //IMasterMessageQueueService masterMessageQueueService,
             IOptions<AppSettingUDP> options
             )
         {
             _logger = logger;
             _udpService = udpService;
             _appSettingUDP = options.Value;
-            _workerMessageQueueService = workerMessageQueueService;
-            _masterMessageQueueService = masterMessageQueueService;
+            //_workerMessageQueueService = workerMessageQueueService;
+            //_masterMessageQueueService = masterMessageQueueService;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -84,12 +84,12 @@ namespace UdpService
                             string subMessage = item + "END;";
                             if(_appSettingUDP.IsUseRabbitMQ)
                             {
-                                var message = new QueueMessage()
-                                {
-                                    Id = "DevicePostEvent"
-                                };
-                                message.Datas.Add("Message", subMessage);
-                                _workerMessageQueueService.PublishWorkerTask(message);
+                                //var message = new QueueMessage()
+                                //{
+                                //    Id = "DevicePostEvent"
+                                //};
+                                //message.Datas.Add("Message", subMessage);
+                                //_workerMessageQueueService.PublishWorkerTask(message);
                             }
                             else
                             {
