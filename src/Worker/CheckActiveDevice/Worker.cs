@@ -18,7 +18,7 @@ using Microsoft.Extensions.Options;
 using Core.Entities;
 
 namespace CheckDeviceService
-{    
+{
     public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> _logger;
@@ -50,7 +50,7 @@ namespace CheckDeviceService
             {
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 _udpService.CheckDeviceS10();
-                await Task.Delay(1200000, cancellationToken);                
+                await Task.Delay(1200000, cancellationToken);
             }
         }
         public override Task StopAsync(CancellationToken cancellationToken)
