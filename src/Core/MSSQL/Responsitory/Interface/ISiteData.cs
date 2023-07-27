@@ -14,6 +14,7 @@ namespace Core.MSSQL.Responsitory.Interface
         Task<Site> GetSiteByDeviceId(int deviceId);
         IEnumerable<Site> GetSite(int deviceid);
         void UpdateStatusActive(int deviceid);
-        void UpdateStatusDisable(int deviceid);
+        void UpdateStatusActive(List<int> lstDeviceid);
+        void UpdateStatusDisable(List<int> lstDeviceid);
     }
 }

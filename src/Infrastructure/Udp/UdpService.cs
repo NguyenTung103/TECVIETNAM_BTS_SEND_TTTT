@@ -775,6 +775,29 @@ namespace Infrastructure.Udp
 
             return result;
         }
-
+        public void CheckDeviceS10()
+        {
+            List<Site> lst = new List<Site>();
+            lst = _siteData.FindAll().ToList();
+            List<int> lstDeviceId = new List<int>();
+            foreach (var item in lst)
+            {
+                try
+                {
+                    var start = DateTime.Now.AddMinutes(-20); //2017-04-05 15:21:23.234
+                    var end = DateTime.Now;//2017-04-04 15:21:23.234                                                                              
+                    var lstData = _reportS10Service.GetByTime(start, end, item.DeviceId.Value, null, null, null);
+                    if (lstData != null && lstData.Count() == 0)
+                    {
+                        lstDeviceId.Add(item.DeviceId.Value);                        
+                    }
+                }
+                catch (Exception)
+                {
+                  
+                }
+            }
+           _siteData.UpdateStatusDisable(lstDeviceId);          
+        }
     }
 }

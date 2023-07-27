@@ -64,7 +64,7 @@ namespace UdpService
                         _endpoint = new IPEndPoint(IPAddress.Any, _appSettingUDP.UdpPort);
                     // Get thong tin tra ve
                     byte[] bytes = _udpClient.Receive(ref _endpoint);
-                    string package = Encoding.ASCII.GetString(bytes, 0, bytes.Length);
+                    string package = Encoding.ASCII.GetString(bytes, 0, bytes.Length);                    
                     var subPackge = package;
                     string fpx = null;
                     if (package.StartsWith("EQID="))
@@ -120,7 +120,7 @@ namespace UdpService
                     //        IOHelper.WritePKG(package, fpx);
                     //}
                 }
-                catch (SocketException sex)
+                catch (SocketException)
                 {
                     if (_udpClient != null)
                     {
@@ -141,5 +141,5 @@ namespace UdpService
             _logger.LogWarning("Worker stopping at: {0}", DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm"));
             return base.StopAsync(cancellationToken);
         }
-    }
+    }    
 }

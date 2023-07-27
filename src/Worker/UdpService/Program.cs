@@ -36,8 +36,7 @@ namespace UdpService
                     services.Configure<WorkerRabbitmqConnection>(hostContext.Configuration.GetSection("WorkerRabbitmqConnection"));
                     services.Configure<MasterRabbitmqConnection>(hostContext.Configuration.GetSection("MasterRabbitmqConnection"));
                     services.AddSingleton<IMasterMessageQueueService, MasterRabbitmqService>();
-                    services.AddSingleton<IWorkerMessageQueueService, WorkerRabbitmqService>();
-                    services.AddHostedService<Worker>();
+                    services.AddSingleton<IWorkerMessageQueueService, WorkerRabbitmqService>();                    
                     services.AddSingleton<IGroupData, GroupData>();
                     services.AddSingleton<IReportS10Data, ReportS10Data>();
                     services.AddSingleton<ISiteData, SiteData>();
@@ -60,7 +59,7 @@ namespace UdpService
 
                     services.AddTransient<Helper>();
                     services.AddSingleton<IZipHelper, GZipHelper>();
-                    services.AddHostedService<Worker>();
+                    services.AddHostedService<Worker>();                    
                     services.AddLog4net();
 
                     services.AddSingleton<IReportS10Service, ReportS10Service>();

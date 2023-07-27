@@ -128,6 +128,18 @@ namespace Infrastructure.Udp
                   "MFL",
                   "Water Level, tinh den mm, co offset do cao"
                },
+                 {
+                  "MTS",
+                  "Nhiệt độ muối"
+               },
+                {
+                  "MEC",
+                  "Độ dẫn điện"
+               },
+                {
+                  "MEV",
+                  "Độ bốc hơi"
+               },
                 {
                   "MFF",
                   "Flow (m3/s)"
@@ -234,13 +246,13 @@ namespace Infrastructure.Udp
                             break;
                             // Hải văn
                         case "MTS":
-                            dataMongo.MFL = GetValue(s2);
+                            dataMongo.MTS = GetValue(s2);
                             break;
                         case "MEC":
-                            dataMongo.MFF = GetValue(s2);
+                            dataMongo.MEC = GetValue(s2);
                             break;
                         case "MEV":
-                            dataMongo.MFV = GetValue(s2);
+                            dataMongo.MEV = GetValue(s2);
                             break;
                     }
                 }
@@ -293,6 +305,25 @@ namespace Infrastructure.Udp
 
             }
             return true;
+        }
+        public IEnumerable<ReportS10> GetByTime(DateTime from, DateTime to, int deviceId, int? kieuTram = null, int? areaId = null, int? groupId = null)
+        {
+            string dateFrom = from.ToString("yyyy-MM-dd HH:mm:ss");
+            string dateTo = to.ToString("yyyy-MM-dd HH:mm:ss");
+            string query = "";
+            if (deviceId != 0)
+            {
+                query = string.Format(@"select * from ReportS10 r
+                                            join Site s on r.DeviceId = s.DeviceId
+                                            where DateCreate between '{0}' and '{1}'  and r.DeviceId = {2} order by r.id desc", dateFrom, dateTo, deviceId);
+            }
+            else
+            {
+                query = string.Format(@"select * from ReportS10 r
+                                            join Site s on r.DeviceId = s.DeviceId
+                                            where DateCreate between '{0}' and '{1}' and s.Group_Id={2} and s.Area_Id={3} and s.TypeSiteId={4} order by r.id desc", dateFrom, dateTo, groupId, areaId, kieuTram);
+            }            
+            return _reportS10Data.Query<ReportS10>(query);
         }
     }
 }
