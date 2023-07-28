@@ -31,7 +31,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BtsWatecService", "src\Work
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UdpService", "src\Worker\UdpService\UdpService.csproj", "{03EA618F-9348-40CD-B82E-F36AACCB21A9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckActiveDevice", "src\Worker\CheckActiveDevice\CheckActiveDevice.csproj", "{512D6238-C4C3-4F71-8D5A-4B8509BF0ED9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckActiveDevice", "src\Worker\CheckActiveDevice\CheckActiveDevice.csproj", "{512D6238-C4C3-4F71-8D5A-4B8509BF0ED9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "document", "document", "{0263090B-540E-43E6-BCDC-A95B14991030}"
+	ProjectSection(SolutionItems) = preProject
+		C:\Users\nguye\Downloads\tao_service_udp.bat = C:\Users\nguye\Downloads\tao_service_udp.bat
+		C:\Users\nguye\Downloads\lenh_restart_cac_dich_vu_cho_udp.bat = C:\Users\nguye\Downloads\lenh_restart_cac_dich_vu_cho_udp.bat
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
