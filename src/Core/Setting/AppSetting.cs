@@ -6,9 +6,10 @@ namespace Core.Setting
 {
     public class AppSetting
     {
-        public string FolderLuuTruFile { get; set; }        
-        public int IsSendTTTT { get; set; }        
-    }    
+        public string UrlDomainWebQuanTrac { get; set; }
+        public string FolderLuuTruFile { get; set; }
+        public int IsSendTTTT { get; set; }
+    }
     public class AppApiWatecSetting
     {
         public string UrlPost { get; set; }
@@ -23,5 +24,6 @@ namespace Core.Setting
         public int UdpPort { get; set; }        
         public bool ToDatabase { get; set; }        
         public bool IsUseRabbitMQ { get; set; }        
+        public string UrlDomainWebQuanTrac { get; set; }        
     }
 }

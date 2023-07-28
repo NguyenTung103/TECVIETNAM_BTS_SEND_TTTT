@@ -33,6 +33,7 @@ namespace CheckActiveDevice
                .ConfigureServices((hostContext, services) =>
                {
                    services.Configure<Connections>(hostContext.Configuration.GetSection("Connections"));
+                   services.Configure<AppSetting>(hostContext.Configuration.GetSection("AppSetting"));
                    services.Configure<AppSettingUDP>(hostContext.Configuration.GetSection("AppSettingUDP"));
                    services.Configure<WorkerRabbitmqConnection>(hostContext.Configuration.GetSection("WorkerRabbitmqConnection"));
                    services.Configure<MasterRabbitmqConnection>(hostContext.Configuration.GetSection("MasterRabbitmqConnection"));

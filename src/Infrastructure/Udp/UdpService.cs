@@ -25,7 +25,7 @@ namespace Infrastructure.Udp
     {
         public readonly IGroupData _groupData;
         public readonly ISiteData _siteData;
-        public readonly AppSetting _appSetting;
+        public readonly AppSettingUDP _appSetting;
         private readonly ILoggingService _loggingService;
         public readonly ICommandData _commandData;
 
@@ -39,7 +39,7 @@ namespace Infrastructure.Udp
 
 
         Helper helperUlti = new Helper();
-        public UdpService(IOptions<AppSetting> option,
+        public UdpService(IOptions<AppSettingUDP> option,
             IGroupData groupData,
             ISiteData siteData,
             ICommandData commandData,
@@ -69,7 +69,7 @@ namespace Infrastructure.Udp
         public async Task<ReturnInfo> Insert(string msg_content)
         {
             try
-            {               
+            {
                 if (msg_content.Contains("ALM"))
                 {
                     DataAlarm dataAlarmMongo = InitAlarm(msg_content);
@@ -775,11 +775,12 @@ namespace Infrastructure.Udp
 
             return result;
         }
-        public void CheckDeviceS10()
+        public async void CheckDeviceS10()
         {
             List<Site> lst = new List<Site>();
             lst = _siteData.FindAll().ToList();
             List<int> lstDeviceId = new List<int>();
+            List<int> lstDeviceIdUpdateActive = new List<int>();
             foreach (var item in lst)
             {
                 try
@@ -789,15 +790,21 @@ namespace Infrastructure.Udp
                     var lstData = _reportS10Service.GetByTime(start, end, item.DeviceId.Value, null, null, null);
                     if (lstData != null && lstData.Count() == 0)
                     {
-                        lstDeviceId.Add(item.DeviceId.Value);                        
+                        lstDeviceId.Add(item.DeviceId.Value);
+                    }
+                    else
+                    {
+                        lstDeviceIdUpdateActive.Add(item.DeviceId.Value);
                     }
                 }
                 catch (Exception)
                 {
-                  
+
                 }
             }
-           _siteData.UpdateStatusDisable(lstDeviceId);          
+            _siteData.UpdateStatusDisable(lstDeviceId);
+            _siteData.UpdateStatusActive(lstDeviceIdUpdateActive);
+            await Core.Helper.ApiSend.Call_PostDataAsync(null, _appSetting.UrlDomainWebQuanTrac, "Administrator/SuperAdmin/CacheManagerRemoveAll", null);
         }
     }
 }

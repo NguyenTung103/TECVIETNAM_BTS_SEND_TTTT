@@ -31,7 +31,7 @@ namespace bts.udpgateway
             {
                 var strDevice = string.Join(",", lstDeviceid);
                 var strDeviceQuery = strDevice.Remove(strDevice.Length - 1, 1);
-                string query = string.Format(@"update site set IsActive=0 where DeviceId in({0})", strDeviceQuery);
+                string query = string.Format(@"update site set IsActive=1 where DeviceId in({0})", strDeviceQuery);
                 Execute(query, null);
             }
 
