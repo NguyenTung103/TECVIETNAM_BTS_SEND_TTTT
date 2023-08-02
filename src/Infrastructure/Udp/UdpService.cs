@@ -132,22 +132,30 @@ namespace Infrastructure.Udp
         }
         public ReturnInfo SendCommand(string message, IPEndPoint endPoint, UdpClient udpClient)
         {
-            string[] strArray = message.Split(';');
-            string s1 = strArray[0].Split('=')[1];
-            int deviceId = int.Parse(s1);
-            var command = _commandData.GetAllCommandByDeviceId(deviceId).FirstOrDefault();
-            if (command != null)
+            try
             {
-                string commandStr = command.Command_Content.Trim();
-                byte[] dgram = Encoding.ASCII.GetBytes(commandStr);
-                int result = udpClient.Send(dgram, dgram.Length, endPoint);
-                command.Status = true;
-                command.UpdateDay = DateTime.Now;
-                if (result > 0)
+                string[] strArray = message.Split(';');
+                string s1 = strArray[0].Split('=')[1];
+                int deviceId = int.Parse(s1);
+                var command = _commandData.GetAllCommandByDeviceId(deviceId).FirstOrDefault();
+                if (command != null)
                 {
-                    _commandData.Update(command);
+                    string commandStr = command.Command_Content.Trim();
+                    byte[] dgram = Encoding.ASCII.GetBytes(commandStr);
+                    int result = udpClient.Send(dgram, dgram.Length, endPoint);
+                    command.Status = true;
+                    command.UpdateDay = DateTime.Now;
+                    if (result > 0)
+                    {
+                        _commandData.Update(command);
+                    }
                 }
             }
+            catch (Exception)
+            {
+
+            }
+
             return new ReturnInfo(ReturnCode.Success, (string)null, (object)null);
         }
         #region SQL and Mongo               
@@ -781,30 +789,37 @@ namespace Infrastructure.Udp
             lst = _siteData.FindAll().ToList();
             List<int> lstDeviceId = new List<int>();
             List<int> lstDeviceIdUpdateActive = new List<int>();
+            string queryDisabel = "", queryEnable = "", error = "";
             foreach (var item in lst)
             {
                 try
                 {
-                    var start = DateTime.Now.AddMinutes(-20); //2017-04-05 15:21:23.234
-                    var end = DateTime.Now;//2017-04-04 15:21:23.234                                                                              
-                    var lstData = _reportS10Service.GetByTime(start, end, item.DeviceId.Value, null, null, null);
-                    if (lstData != null && lstData.Count() == 0)
+                    if(item.DeviceId==48829)
                     {
-                        lstDeviceId.Add(item.DeviceId.Value);
+                        error = item.DeviceId.ToString();
+                        var start = DateTime.Now.AddMinutes(-20); //2017-04-05 15:21:23.234
+                        var end = DateTime.Now;//2017-04-04 15:21:23.234                                                                              
+                        var lstData = _reportS10Service.GetByTime(start, end, item.DeviceId.Value, null, null, null);
+                        if ((lstData != null && lstData.Count() == 0) || lstData == null)
+                        {
+                            lstDeviceId.Add(item.DeviceId.Value);
+                        }
+                        else
+                        {
+                            lstDeviceIdUpdateActive.Add(item.DeviceId.Value);
+                        }
                     }
-                    else
-                    {
-                        lstDeviceIdUpdateActive.Add(item.DeviceId.Value);
-                    }
+                    
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-
+                    error = item.DeviceId + " /n " + ex.Message;
                 }
             }
+
             _siteData.UpdateStatusDisable(lstDeviceId);
             _siteData.UpdateStatusActive(lstDeviceIdUpdateActive);
-            await Core.Helper.ApiSend.Call_PostDataAsync(null, _appSetting.UrlDomainWebQuanTrac, "Administrator/SuperAdmin/CacheManagerRemoveAll", null);
+            await Core.Helper.ApiSend.Call_PostDataAsync(null, _appSetting.UrlDomainWebQuanTrac, "Administrator/SuperAdmin/CacheManagerRemoveAll", null);            
         }
     }
 }

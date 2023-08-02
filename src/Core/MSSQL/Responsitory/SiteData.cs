@@ -26,12 +26,12 @@ namespace bts.udpgateway
             return Query<Site>(query, null);
         }
         public void UpdateStatusActive(List<int> lstDeviceid)
-        {
+        {           
             if (lstDeviceid != null && lstDeviceid.Count() > 0)
             {
                 var strDevice = string.Join(",", lstDeviceid);
                 var strDeviceQuery = strDevice.Remove(strDevice.Length - 1, 1);
-                string query = string.Format(@"update site set IsActive=1 where DeviceId in({0})", strDeviceQuery);
+                string query = string.Format(@"update site set IsActive=1 where DeviceId in({0})", strDevice);              
                 Execute(query, null);
             }
 
@@ -42,12 +42,12 @@ namespace bts.udpgateway
             Execute(query, null);
         }
         public void UpdateStatusDisable(List<int> lstDeviceid)
-        {
+        {     
             if (lstDeviceid != null && lstDeviceid.Count() > 0)
             {
                 var strDevice = string.Join(",", lstDeviceid);
                 var strDeviceQuery = strDevice.Remove(strDevice.Length - 1, 1);
-                string query = string.Format(@"update site set IsActive=0 where DeviceId in({0})", strDeviceQuery);
+                string query = string.Format(@"update site set IsActive=0 where DeviceId in({0})", strDevice);               
                 Execute(query, null);
             }
 

@@ -49,7 +49,7 @@ namespace CheckDeviceService
             while (!cancellationToken.IsCancellationRequested)
             {
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                _udpService.CheckDeviceS10();
+                _udpService.CheckDeviceS10();                
                 await Task.Delay(1200000, cancellationToken);
             }
         }
