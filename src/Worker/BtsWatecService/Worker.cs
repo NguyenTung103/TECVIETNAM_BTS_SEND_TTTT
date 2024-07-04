@@ -1,5 +1,4 @@
-﻿using bts.udpgateway;
-using BtsGetwayService;
+﻿using BtsGetwayService;
 using Core.Logging;
 using Core.MSSQL.Responsitory.Interface;
 using Core.Setting;
@@ -8,8 +7,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -58,8 +55,8 @@ namespace BtsWatecService
         public override async Task<Task> StartAsync(CancellationToken cancellationToken)
         {
             int groupId = 0;
-            var dsGroups = _groupData.GetGroupSend();
-            if(_appSetting.IsChooseGroup == 1)
+            var dsGroups = _groupData.GetAll();
+            if (_appSetting.IsChooseGroup == 1)
             {
                 _logger.LogInformation("Vui long chon gia tri group can gui");
                 foreach (var item in dsGroups)
@@ -73,6 +70,7 @@ namespace BtsWatecService
                     _groupID = groupId;
                     var dateTimeNow = DateTime.Now;
                     var milisecondDelay = _helperUlti.ThoiGianDelayDeBatDauChayService(dateTimeNow);
+                    _logger.LogInformation("Worker delay " + milisecondDelay);
                     _logger.LogInformation("Worker starting at: {0}", DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss"));
                     await Task.Delay(milisecondDelay);
                     return base.StartAsync(cancellationToken);
@@ -90,7 +88,7 @@ namespace BtsWatecService
                 await Task.Delay(milisecondDelay);
                 return base.StartAsync(cancellationToken);
             }
-           
+
         }
         public override Task StopAsync(CancellationToken cancellationToken)
         {

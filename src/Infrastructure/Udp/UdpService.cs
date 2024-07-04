@@ -789,37 +789,30 @@ namespace Infrastructure.Udp
             lst = _siteData.FindAll().ToList();
             List<int> lstDeviceId = new List<int>();
             List<int> lstDeviceIdUpdateActive = new List<int>();
-            string queryDisabel = "", queryEnable = "", error = "";
             foreach (var item in lst)
             {
                 try
                 {
-                    if(item.DeviceId==48829)
+                    var start = DateTime.Now.AddMinutes(-20); //2017-04-05 15:21:23.234
+                    var end = DateTime.Now;//2017-04-04 15:21:23.234                                                                              
+                    var lstData = _reportS10Service.GetByTime(start, end, item.DeviceId.Value, null, null, null);
+                    if ((lstData != null && lstData.Count() == 0) || lstData == null)
                     {
-                        error = item.DeviceId.ToString();
-                        var start = DateTime.Now.AddMinutes(-20); //2017-04-05 15:21:23.234
-                        var end = DateTime.Now;//2017-04-04 15:21:23.234                                                                              
-                        var lstData = _reportS10Service.GetByTime(start, end, item.DeviceId.Value, null, null, null);
-                        if ((lstData != null && lstData.Count() == 0) || lstData == null)
-                        {
-                            lstDeviceId.Add(item.DeviceId.Value);
-                        }
-                        else
-                        {
-                            lstDeviceIdUpdateActive.Add(item.DeviceId.Value);
-                        }
+                        lstDeviceId.Add(item.DeviceId.Value);
                     }
-                    
+                    else
+                    {
+                        lstDeviceIdUpdateActive.Add(item.DeviceId.Value);
+                    }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    error = item.DeviceId + " /n " + ex.Message;
                 }
             }
 
             _siteData.UpdateStatusDisable(lstDeviceId);
             _siteData.UpdateStatusActive(lstDeviceIdUpdateActive);
-            await Core.Helper.ApiSend.Call_PostDataAsync(null, _appSetting.UrlDomainWebQuanTrac, "Administrator/SuperAdmin/CacheManagerRemoveAll", null);            
+            await Core.Helper.ApiSend.Call_PostDataAsync(null, _appSetting.UrlDomainWebQuanTrac, "Administrator/SuperAdmin/CacheManagerRemoveAll", null);
         }
     }
 }
