@@ -3,7 +3,6 @@ using bts.udpgateway.integration;
 using BtsGetwayService;
 using BtsGetwayService.Interface;
 using BtsGetwayService.MongoDb.Entity;
-using BtsGetwayService.MSSQL.Entity;
 using Core.Logging;
 using Core.MSSQL.Responsitory.Interface;
 using Core.Setting;
@@ -11,7 +10,6 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -124,9 +122,9 @@ namespace Infrastructure.Udp
                 }
                 return new ReturnInfo(ReturnCode.Success, (string)null, (object)null);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                //XtraLog.Write($"[GET:RESULT] Insert mongo :{ex.Message}, {ex.StackTrace}", LogLevel.INFO, "Integrator.Insert");
+                _loggingService.Error(ex);
                 return new ReturnInfo(ReturnCode.Success, (string)null, (object)null);
             }
         }
@@ -151,9 +149,9 @@ namespace Infrastructure.Udp
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                _loggingService.Error(ex);
             }
 
             return new ReturnInfo(ReturnCode.Success, (string)null, (object)null);

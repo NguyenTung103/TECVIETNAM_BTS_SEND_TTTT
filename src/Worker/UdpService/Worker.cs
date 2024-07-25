@@ -1,21 +1,16 @@
 ﻿using bts.udpgateway.integration;
-using BtsGetwayService;
-using Core.Interfaces;
+using Core.Logging;
+using Core.Setting;
 using Infrastructure.Udp;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Linq;
-using System.Net.Sockets;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Core.Setting;
-using Microsoft.Extensions.Options;
-using Core.Entities;
 
 namespace UdpService
 {
@@ -23,14 +18,16 @@ namespace UdpService
     {
         private readonly ILogger<Worker> _logger;
 
-        private readonly IUdpService _udpService;        
+        private readonly IUdpService _udpService;
         static private UdpClient _udpClient = null;
         static private IPEndPoint _endpoint = null;
         private AppSettingUDP _appSettingUDP;
+        private readonly ILoggingService _loggingService;
         //public readonly IWorkerMessageQueueService _workerMessageQueueService;
         //public readonly IMasterMessageQueueService _masterMessageQueueService;
         public Worker(ILogger<Worker> logger,
             IUdpService udpService,
+            ILoggingService loggingService,
             //IWorkerMessageQueueService workerMessageQueueService,
             //IMasterMessageQueueService masterMessageQueueService,
             IOptions<AppSettingUDP> options
@@ -39,6 +36,7 @@ namespace UdpService
             _logger = logger;
             _udpService = udpService;
             _appSettingUDP = options.Value;
+            _loggingService = loggingService;
             //_workerMessageQueueService = workerMessageQueueService;
             //_masterMessageQueueService = masterMessageQueueService;
         }
@@ -53,7 +51,6 @@ namespace UdpService
         }
         public override Task StartAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Worker starting at: {0}", DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss"));
             while (true)
             {
                 try
@@ -64,7 +61,7 @@ namespace UdpService
                         _endpoint = new IPEndPoint(IPAddress.Any, _appSettingUDP.UdpPort);
                     // Get thong tin tra ve
                     byte[] bytes = _udpClient.Receive(ref _endpoint);
-                    string package = Encoding.ASCII.GetString(bytes, 0, bytes.Length);                    
+                    string package = Encoding.ASCII.GetString(bytes, 0, bytes.Length);
                     var subPackge = package;
                     string fpx = null;
                     if (package.StartsWith("EQID="))
@@ -82,7 +79,7 @@ namespace UdpService
                                 continue;
 
                             string subMessage = item + "END;";
-                            if(_appSettingUDP.IsUseRabbitMQ)
+                            if (_appSettingUDP.IsUseRabbitMQ)
                             {
                                 //var message = new QueueMessage()
                                 //{
@@ -94,14 +91,9 @@ namespace UdpService
                             else
                             {
                                 ReturnInfo returnInfo = _udpService.Insert(subMessage).GetAwaiter().GetResult();
-                                if (returnInfo.Code != ReturnCode.Success)
-                                {
-                                    // Ghi mesage nhận được                                   
-                                    //IOHelper.WriteMSG(subMessage, fpx);
-                                }
                             }
-                           
-                           
+
+
                             if (subMessage.Contains(";REQ;") && subMessage.Contains(";TIME;END;"))
                             {
                                 var commandBack = string.Format("cmdC24={0:00}:{1:00}:{2:00}-{3:00}/{4:00}/{5:00}-{6:d};", DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second, DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year % 100, DateTime.Now.DayOfWeek + 1);
@@ -114,11 +106,6 @@ namespace UdpService
                             }
                         }
                     }
-                    //if (ConfigHelper.ToFilesystem)
-                    //{
-                    //    if (package.Contains("S10"))
-                    //        IOHelper.WritePKG(package, fpx);
-                    //}
                 }
                 catch (SocketException)
                 {
@@ -132,14 +119,13 @@ namespace UdpService
                         _udpClient.Close();
                         _udpClient = null;
                     }
-                }                
+                }
             }
-            return base.StartAsync(cancellationToken);
         }
         public override Task StopAsync(CancellationToken cancellationToken)
         {
             _logger.LogWarning("Worker stopping at: {0}", DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm"));
             return base.StopAsync(cancellationToken);
         }
-    }    
+    }
 }

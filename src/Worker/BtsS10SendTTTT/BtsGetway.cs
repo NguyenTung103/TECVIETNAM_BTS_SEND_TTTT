@@ -1,26 +1,17 @@
 ﻿using bts.udpgateway;
 using BtsGetwayService.Model;
 using BtsGetwayService.MSSQL.Entity;
-using BtsGetwayService.Service;
-using Newtonsoft.Json;
+using Core.Logging;
+using Core.Model;
+using Core.MSSQL.Responsitory.Interface;
+using Core.Setting;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Serilog;
 using System.Text.Json;
-using Core.MSSQL.Responsitory.Interface;
-using Microsoft.Extensions.Options;
-using Core.Setting;
-using BtsGetwayService.Interface;
-using Core.Logging;
-using Core.Model;
 
 namespace BtsGetwayService
 {
@@ -115,7 +106,7 @@ namespace BtsGetwayService
                                         ModelFileThuyVanS10Json modelFileS10Json = new ModelFileThuyVanS10Json();
                                         modelFileS10Json.StationNo = item.DeviceId.Value.ToString("D5");
                                         modelFileS10Json.Datadate = double.Parse(item.DateCreate.Value.ToString("yyyyMMddHHmmss"));
-                                        modelFileS10Json.WL = float.Parse(item.MFL == null ? "0" : Math.Round(item.MFL.Value * 100, 2).ToString());
+                                        modelFileS10Json.WL = float.Parse(item.MFL == null ? "0" : Math.Round(item.MFL.Value, 2).ToString());
                                         dataThuyVan.Add(modelFileS10Json);
                                         dateTimeStr = modelFileS10Json.Datadate.ToString();
                                         dateTime = item.DateCreate.Value;

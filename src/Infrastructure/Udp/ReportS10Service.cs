@@ -1,6 +1,7 @@
 ﻿using bts.udpgateway;
 using BtsGetwayService;
 using Core.Helper;
+using Core.Logging;
 using Core.Model;
 using Core.MSSQL.Responsitory.Interface;
 using Core.Setting;
@@ -9,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Infrastructure.Udp
@@ -19,11 +19,13 @@ namespace Infrastructure.Udp
         public readonly IReportS10Data _reportS10Data;
         public readonly ISiteData _siteData;
         public readonly AppApiWatecSetting _appApiWatecSetting;
-        public ReportS10Service(IReportS10Data reportS10Data, ISiteData siteData, IOptions<AppApiWatecSetting> appApiWatecSetting)
+        private readonly ILoggingService _loggingService;
+        public ReportS10Service(IReportS10Data reportS10Data, ISiteData siteData, ILoggingService loggingService, IOptions<AppApiWatecSetting> appApiWatecSetting)
         {
             _reportS10Data = reportS10Data;
             _siteData = siteData;
             _appApiWatecSetting = appApiWatecSetting.Value;
+            _loggingService = loggingService;
         }
         public ReportS10 InitS10(string message)
         {
@@ -159,9 +161,9 @@ namespace Infrastructure.Udp
                 dataMongo.DateCreate = DateTime.ParseExact(str2, "HH:mm:ss-dd/MM/yy",
                                        System.Globalization.CultureInfo.InvariantCulture);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                _loggingService.Error(ex);
             }
             dictionary1.Add(new KeyValuePair<string, string>("EQID", s1));
             dictionary1.Add(new KeyValuePair<string, string>("S10", "1"));
@@ -244,7 +246,7 @@ namespace Infrastructure.Udp
                         case "MFV":
                             dataMongo.MFV = GetValue(s2);
                             break;
-                            // Hải văn
+                        // Hải văn
                         case "MTS":
                             dataMongo.MTS = GetValue(s2);
                             break;
@@ -256,8 +258,9 @@ namespace Infrastructure.Udp
                             break;
                     }
                 }
-                catch (Exception)
-                {                   
+                catch (Exception ex)
+                {
+                    _loggingService.Error(ex);
                     return dataMongo;
                 }
             }
@@ -274,7 +277,7 @@ namespace Infrastructure.Udp
         }
         public bool InsertS10(ReportS10 reportS10)
         {
-            WatecS10Model modelFileS10Json = new WatecS10Model();          
+            WatecS10Model modelFileS10Json = new WatecS10Model();
             var siteByĐeviceId = _siteData.GetSite(reportS10.DeviceId.Value).FirstOrDefault();
             if (siteByĐeviceId != null)
             {
@@ -295,9 +298,9 @@ namespace Infrastructure.Udp
                     Task t = Task.WhenAll(tasks);
                     t.Wait();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-
+                    _loggingService.Error(ex);
                 }
                 finally
                 {
@@ -322,7 +325,7 @@ namespace Infrastructure.Udp
                 query = string.Format(@"select * from ReportS10 r
                                             join Site s on r.DeviceId = s.DeviceId
                                             where DateCreate between '{0}' and '{1}' and s.Group_Id={2} and s.Area_Id={3} and s.TypeSiteId={4} order by r.id desc", dateFrom, dateTo, groupId, areaId, kieuTram);
-            }            
+            }
             return _reportS10Data.Query<ReportS10>(query);
         }
     }
