@@ -1,22 +1,16 @@
 using bts.udpgateway;
+using BtsGetwayService;
 using BtsGetwayService.Interface;
 using BtsGetwayService.Service;
-using BtsGetwayService;
-using Core.Interfaces;
+using Core;
 using Core.Logging;
-using Core.MessageQueue;
 using Core.MongoDb.Data.Interface;
 using Core.MSSQL.Responsitory.Interface;
 using Core.Setting;
-using Core;
 using ES_CapDien.AppCode;
 using Infrastructure.Udp;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace UdpService
 {
@@ -33,10 +27,10 @@ namespace UdpService
                 {
                     services.Configure<Connections>(hostContext.Configuration.GetSection("Connections"));
                     services.Configure<AppSettingUDP>(hostContext.Configuration.GetSection("AppSettingUDP"));
-                    services.Configure<WorkerRabbitmqConnection>(hostContext.Configuration.GetSection("WorkerRabbitmqConnection"));
-                    services.Configure<MasterRabbitmqConnection>(hostContext.Configuration.GetSection("MasterRabbitmqConnection"));
-                    services.AddSingleton<IMasterMessageQueueService, MasterRabbitmqService>();
-                    services.AddSingleton<IWorkerMessageQueueService, WorkerRabbitmqService>();                    
+                    //services.Configure<WorkerRabbitmqConnection>(hostContext.Configuration.GetSection("WorkerRabbitmqConnection"));
+                    //services.Configure<MasterRabbitmqConnection>(hostContext.Configuration.GetSection("MasterRabbitmqConnection"));
+                    //services.AddSingleton<IMasterMessageQueueService, MasterRabbitmqService>();
+                    //services.AddSingleton<IWorkerMessageQueueService, WorkerRabbitmqService>();                    
                     services.AddSingleton<IGroupData, GroupData>();
                     services.AddSingleton<IReportS10Data, ReportS10Data>();
                     services.AddSingleton<ISiteData, SiteData>();
@@ -59,14 +53,14 @@ namespace UdpService
 
                     services.AddTransient<Helper>();
                     services.AddSingleton<IZipHelper, GZipHelper>();
-                    services.AddHostedService<Worker>();                    
+                    services.AddHostedService<Worker>();
                     services.AddLog4net();
 
                     services.AddSingleton<IReportS10Service, ReportS10Service>();
                     services.AddTransient<IReportDailyService, ReportDailyService>();
                     services.AddTransient<IUdpService, Infrastructure.Udp.UdpService>();
                     services.AddTransient<IDataObservationService, DataObservationMongoService>();
-                    services.AddTransient<IDataAlarmService, DataAlarmMongoService>();                    
+                    services.AddTransient<IDataAlarmService, DataAlarmMongoService>();
                 }).UseWindowsService();
     }
 }

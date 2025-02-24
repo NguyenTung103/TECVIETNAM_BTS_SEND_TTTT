@@ -1,28 +1,18 @@
 ﻿using bts.udpgateway;
+using BtsGetwayService;
 using BtsGetwayService.Model;
 using BtsGetwayService.MSSQL.Entity;
-using BtsGetwayService.Service;
-using Newtonsoft.Json;
+using Core.Logging;
+using Core.Model;
+using Core.MSSQL.Responsitory.Interface;
+using Core.Setting;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Serilog;
 using System.Text.Json;
-using Core.MSSQL.Responsitory.Interface;
-using Microsoft.Extensions.Options;
-using Core.Setting;
-using BtsGetwayService.Interface;
-using Core.Logging;
-using BtsGetwayService;
-using Core.Model;
-using static log4net.Appender.RollingFileAppender;
 
 namespace GetDataByMonth
 {
@@ -54,7 +44,7 @@ namespace GetDataByMonth
             {
                 var ngayLayDuLieu = new DateTime(nam, thang, ngay, 00, 00, 00, 00);
                 string appConfigPath = _appSetting.FolderLuuTruFile + @"\";
-                int isSendDataTTTT = _appSetting.IsSendTTTT;             
+                int isSendDataTTTT = _appSetting.IsSendTTTT;
                 List<DateTime> lstDate = new List<DateTime>();
                 lstDate.Add(ngayLayDuLieu);
                 foreach (DateTime date in lstDate)
@@ -62,15 +52,15 @@ namespace GetDataByMonth
                     for (int i = 0; i < 144; i++)
                     {
                         var from = date.AddMinutes(i * 10);
-                        var to = date.AddMinutes((i + 1) * 10);                       
+                        var to = date.AddMinutes((i + 1) * 10);
                         foreach (var grp in lstGroup)
                         {
                             DateTime dateTime = from;
-                            string userName = grp.FtpAccount.Trim();
-                            string password = grp.FtpPassword.Trim();
-                            string appConfigFolderTTTT = grp.FtpDirectory.Trim();
-                            string host = grp.FtpIp.Trim();
-                            var dateTimeStr = "";                            
+                            string userName = isSendDataTTTT == 1 ? grp.FtpAccount.Trim() : "";
+                            string password = isSendDataTTTT == 1 ? grp.FtpPassword.Trim() : "";
+                            string appConfigFolderTTTT = isSendDataTTTT == 1 ? grp.FtpDirectory.Trim() : "";
+                            string host = isSendDataTTTT == 1 ? grp.FtpIp.Trim() : "";
+                            var dateTimeStr = "";
                             List<ModelFileKhiTuongS10Json> dataTramKhiTuong = new List<ModelFileKhiTuongS10Json>();
                             List<ModelFileGioS10Json> dataTramGio = new List<ModelFileGioS10Json>();
                             List<ModelFileLuongMuaS10Json> dataMua = new List<ModelFileLuongMuaS10Json>();
