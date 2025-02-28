@@ -150,6 +150,33 @@ namespace Infrastructure.Udp
                   "MFV",
                   "Velocity (m/s)"
                }
+                //Thủy điện hòa bình
+                ,
+               {
+                  "MRA",
+                  "lượng mưa tích lũy trong 5 phút"
+               }
+                ,
+               {
+                  "MRD",
+                  "lượng mưa tích lũy trong 30 phút"
+               },
+               {
+                  "MRE",
+                  "lượng mưa tích lũy trong 3h"
+               },
+               {
+                  "MRF",
+                  "lượng mưa tích lũy trong 6h"
+               },
+               {
+                  "MRG",
+                  "lượng mưa tích lũy trong 12h"
+               },
+               {
+                  "MRS",
+                  "lượng mưa tích lũy trong 7 ngày"
+               }
               };
             string[] strArray = message.Split(';');
             string s1 = strArray[0].Split('=')[1];
@@ -256,6 +283,25 @@ namespace Infrastructure.Udp
                         case "MEV":
                             dataMongo.MEV = GetValue(s2);
                             break;
+                        // Thủy điện hòa bình 
+                        case "MRA":
+                            dataMongo.MRA = GetValue(s2);
+                            break;
+                        case "MRD":
+                            dataMongo.MRD = GetValue(s2);
+                            break;
+                        case "MRE":
+                            dataMongo.MRE = GetValue(s2);
+                            break;
+                        case "MRF":
+                            dataMongo.MRF = GetValue(s2);
+                            break;
+                        case "MRG":
+                            dataMongo.MRG = GetValue(s2);
+                            break;
+                        case "MRS":
+                            dataMongo.MRS = GetValue(s2);
+                            break;                        
                     }
                 }
                 catch (Exception ex)
@@ -278,12 +324,12 @@ namespace Infrastructure.Udp
         public bool InsertS10(ReportS10 reportS10)
         {
             WatecS10Model modelFileS10Json = new WatecS10Model();
-            var siteByĐeviceId = _siteData.GetSite(reportS10.DeviceId.Value).FirstOrDefault();
-            if (siteByĐeviceId != null)
+            var siteByDeviceId = _siteData.GetSite(reportS10.DeviceId.Value).FirstOrDefault();
+            if (siteByDeviceId != null)
             {
                 try
                 {
-                    siteByĐeviceId.IsActive = true;
+                    siteByDeviceId.IsActive = true;
                     var tasks = new List<Task>();
                     tasks.Add(Task.Run(() => _siteData.UpdateStatusActive(reportS10.DeviceId.Value)));
                     tasks.Add(Task.Run(() => _reportS10Data.Insert(reportS10)));

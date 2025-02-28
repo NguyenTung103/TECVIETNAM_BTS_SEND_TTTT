@@ -40,5 +40,12 @@ namespace bts.udpgateway
         public Nullable<double> MTS { get; set; }
         public Nullable<double> MEC { get; set; }
         public Nullable<double> MEV { get; set; }
+        // Thủy điện hòa bình
+        public Nullable<double> MRA { get; set; }
+        public Nullable<double> MRD { get; set; }
+        public Nullable<double> MRE { get; set; }
+        public Nullable<double> MRF { get; set; }
+        public Nullable<double> MRG { get; set; }
+        public Nullable<double> MRS { get; set; }
     }
 }

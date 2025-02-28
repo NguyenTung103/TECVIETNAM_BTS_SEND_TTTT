@@ -35,9 +35,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckActiveDevice", "src\Wo
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "document", "document", "{0263090B-540E-43E6-BCDC-A95B14991030}"
 	ProjectSection(SolutionItems) = preProject
-		C:\Users\nguye\Downloads\tao_service_udp.bat = C:\Users\nguye\Downloads\tao_service_udp.bat
 		C:\Users\nguye\Downloads\lenh_restart_cac_dich_vu_cho_udp.bat = C:\Users\nguye\Downloads\lenh_restart_cac_dich_vu_cho_udp.bat
+		C:\Users\nguye\Downloads\tao_service_udp.bat = C:\Users\nguye\Downloads\tao_service_udp.bat
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{513A97AA-8B5F-4D5D-A9E0-F74E19F48B94}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTest", "src\Test\UnitTest\UnitTest.csproj", "{61837357-7C3F-474E-B72E-8F57B6B3FC2C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -85,6 +89,10 @@ Global
 		{512D6238-C4C3-4F71-8D5A-4B8509BF0ED9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{512D6238-C4C3-4F71-8D5A-4B8509BF0ED9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{512D6238-C4C3-4F71-8D5A-4B8509BF0ED9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61837357-7C3F-474E-B72E-8F57B6B3FC2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61837357-7C3F-474E-B72E-8F57B6B3FC2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61837357-7C3F-474E-B72E-8F57B6B3FC2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61837357-7C3F-474E-B72E-8F57B6B3FC2C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -104,6 +112,8 @@ Global
 		{5C8977E1-8917-48B4-B87E-33B8D0AEC952} = {71423B68-852A-4020-9E0B-65B118683972}
 		{03EA618F-9348-40CD-B82E-F36AACCB21A9} = {46F2851E-4E56-4558-960F-9C4F50F8EEE6}
 		{512D6238-C4C3-4F71-8D5A-4B8509BF0ED9} = {46F2851E-4E56-4558-960F-9C4F50F8EEE6}
+		{513A97AA-8B5F-4D5D-A9E0-F74E19F48B94} = {EF9AFA2F-0A52-4D72-BCBB-67555A6095CB}
+		{61837357-7C3F-474E-B72E-8F57B6B3FC2C} = {513A97AA-8B5F-4D5D-A9E0-F74E19F48B94}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4393850D-B970-4A12-95E2-C86E11DEFA0E}
