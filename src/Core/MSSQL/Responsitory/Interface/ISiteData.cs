@@ -11,6 +11,7 @@ namespace Core.MSSQL.Responsitory.Interface
     public interface ISiteData : IDapperBaseData<Site>
     {
         IEnumerable<Site> GetListSite(int groupId);
+        Task<IEnumerable<Site>> GetDsSite(List<int> dsDeviceId);
         Task<Site> GetSiteByDeviceId(int deviceId);
         IEnumerable<Site> GetSite(int deviceid);
         void UpdateStatusActive(int deviceid);

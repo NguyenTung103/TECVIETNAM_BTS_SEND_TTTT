@@ -1,13 +1,17 @@
 ﻿using bts.udpgateway;
 using BtsGetwayService;
+using Core.Caching;
 using Core.Helper;
 using Core.Logging;
 using Core.Model;
+using Core.Model.Report.ReportDay;
 using Core.MSSQL.Responsitory.Interface;
 using Core.Setting;
 using Microsoft.Extensions.Options;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,13 +23,25 @@ namespace Infrastructure.Udp
         public readonly IReportS10Data _reportS10Data;
         public readonly ISiteData _siteData;
         public readonly AppApiWatecSetting _appApiWatecSetting;
+        private readonly CacheSettings _cacheSettings;
         private readonly ILoggingService _loggingService;
-        public ReportS10Service(IReportS10Data reportS10Data, ISiteData siteData, ILoggingService loggingService, IOptions<AppApiWatecSetting> appApiWatecSetting)
+        private readonly IAsyncCacheService _asyncCacheService;
+        private string _cacheKey;
+        public ReportS10Service(IReportS10Data reportS10Data
+            , ISiteData siteData
+            , ILoggingService loggingService
+            , IOptions<AppApiWatecSetting> appApiWatecSetting
+            , IAsyncCacheService cacheService
+            , IOptions<CacheSettings> option
+            )
         {
+            _cacheKey = "ReportS10Service";
             _reportS10Data = reportS10Data;
+            _asyncCacheService = cacheService;
             _siteData = siteData;
             _appApiWatecSetting = appApiWatecSetting.Value;
             _loggingService = loggingService;
+            _cacheSettings = option.Value;
         }
         public ReportS10 InitS10(string message)
         {
@@ -301,7 +317,7 @@ namespace Infrastructure.Udp
                             break;
                         case "MRS":
                             dataMongo.MRS = GetValue(s2);
-                            break;                        
+                            break;
                     }
                 }
                 catch (Exception ex)
@@ -373,6 +389,48 @@ namespace Infrastructure.Udp
                                             where DateCreate between '{0}' and '{1}' and s.Group_Id={2} and s.Area_Id={3} and s.TypeSiteId={4} order by r.id desc", dateFrom, dateTo, groupId, areaId, kieuTram);
             }
             return _reportS10Data.Query<ReportS10>(query);
+        }
+        public async Task<List<ReportDayReponseModel>> GetReportByDay(ReportDayRequestModel model)
+        {
+            string strCachedKey = Utility.BuildCachedKey(_cacheKey, "GetReportByDay", model.sensorTarget, model.toDate, model.fromDate, model.stationCodes);
+            //return await _asyncCacheService.GetOrCreateAsync(strCachedKey, async () =>
+            //{
+                List<ReportDayReponseModel> result = new List<ReportDayReponseModel>();
+                var dataSql = _reportS10Data.GetReportByDay(model);
+                var dsDay = dataSql.Select(i => i.Date).Distinct();
+                foreach (var item in dsDay)
+                {
+                    ReportDayReponseModel reportDay = new ReportDayReponseModel();
+                    reportDay.Time = item.ToString("HH:mm dd/MM/yyyy");
+                    var dsDataReport = dataSql.Where(i => i.Date == item).ToList();
+                    var listDatByDay = new List<Dictionary<string, DataReportDayValue>>();
+                    foreach (var report in dsDataReport)
+                    {
+                        var dataByThietBi = new Dictionary<string, DataReportDayValue>();
+                        string key = string.Empty;
+                        if (report.Code_Group == Constant.MuaHoaBinh)
+                        {
+                            key = $"AQRLG{report.DeviceId}_{report.TypeSiteId}_Sum";
+                        }
+                        else
+                        {
+                            key = $"{report.DeviceId}_{report.TypeSiteId}_Sum";
+                        }
+                        dataByThietBi[key] = new DataReportDayValue
+                        {
+                            Average = report.Average,
+                            Min = report.Min,
+                            Last = report.Last,
+                            Max = report.Max,
+                            Sum = report.Sum
+                        };
+                        listDatByDay.Add(dataByThietBi);
+                    }
+                    reportDay.Data = listDatByDay;
+                    result.Add(reportDay);
+                }
+                return result;
+            //}, _cacheSettings.CacheTime);            
         }
     }
 }

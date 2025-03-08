@@ -6,9 +6,11 @@ using Dapper;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace bts.udpgateway
@@ -58,6 +60,18 @@ namespace bts.udpgateway
             listParameter.Add("@Group_ID", groupId);
             string query = string.Format(@"select * from Site where Group_Id=@Group_ID and IsActive=1", groupId);
             return Query<Site>(query, listParameter);
+        }
+        public async Task<IEnumerable<Site>> GetDsSite(List<int> dsDeviceId)
+        {
+            DynamicParameters listParameter = new DynamicParameters();
+            string query = string.Format(@"select * from Site s left join RegionalGroup rg on s.Group_Id = rg.Id");
+            if (dsDeviceId.Any())
+            {
+                query += "where s.DeviceId IN(@DS_DeviceId)";
+                listParameter.Add("@DS_DeviceId", dsDeviceId);
+            }
+            
+            return await QueryAsync<Site>(query, listParameter);
         }
         public async Task<Site> GetSiteByDeviceId(int deviceId)
         {

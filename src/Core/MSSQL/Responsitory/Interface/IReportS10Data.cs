@@ -1,6 +1,7 @@
 ﻿using bts.udpgateway;
 using BtsGetwayService.Core;
 using BtsGetwayService.MSSQL.Entity;
+using Core.Model.Report.ReportDay;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,5 +12,6 @@ namespace Core.MSSQL.Responsitory.Interface
     {
         IEnumerable<ReportS10> GetByTime(DateTime from, DateTime to, int deviceId);
         ReportS10 GetLatest(int deviceId);
+        List<DataReportDayEntity> GetReportByDay(ReportDayRequestModel model);
     }
 }

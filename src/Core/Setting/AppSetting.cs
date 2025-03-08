@@ -26,4 +26,19 @@ namespace Core.Setting
         public bool IsUseRabbitMQ { get; set; }        
         public string UrlDomainWebQuanTrac { get; set; }        
     }
+    public class JWT
+    {
+        public string Issuer { get; set; }
+        public string Audience { get; set; }
+        public string ScretKey { get; set; }
+    }
+    public class JwtAccountConfig
+    {
+        public string Username { get; set; }
+        public string Password { get; set; }        
+    }
+    public class CacheSettings
+    {       
+        public int CacheTime { get; set; }
+    }
 }

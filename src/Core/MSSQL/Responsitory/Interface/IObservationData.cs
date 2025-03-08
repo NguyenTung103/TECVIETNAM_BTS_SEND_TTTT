@@ -4,11 +4,13 @@ using BtsGetwayService.MSSQL.Entity;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Core.MSSQL.Responsitory.Interface
 {
     public interface IObservationData : IDapperBaseData<Observation>
     {
         Observation GetByCode(string code);
+        Task<List<Observation>> GetAll();
     }
 }

@@ -1,6 +1,7 @@
 using ApiWatec.Models;
 using BtsGetwayService.MongoDb.Entity;
 using Core.MSSQL.Responsitory.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -86,6 +87,12 @@ namespace ApiWatec.Controllers
                 result += "}, \"rid\": \"" + doMua.rid+ "\"}";
             }            
             return result;
+        }
+        [HttpGet("test")]
+        [Authorize]
+        public ActionResult<string> test()
+        {           
+            return Ok("test");
         }
     }
 }

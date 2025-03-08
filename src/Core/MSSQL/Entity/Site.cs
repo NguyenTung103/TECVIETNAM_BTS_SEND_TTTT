@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace bts.udpgateway
 {
     [Table("Site")]
-    public class Site
+    public partial class Site
     {
         public int Id { get; set; }
 
@@ -38,5 +38,9 @@ namespace bts.udpgateway
 
         public Nullable<int> DeviceId { get; set; }
         public Nullable<int> TypeSiteId { get; set; }
+    }
+    public partial class Site
+    {        
+        public string Code { get; set; }
     }
 }

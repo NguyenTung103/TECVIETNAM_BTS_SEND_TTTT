@@ -73,12 +73,14 @@ namespace UdpService
                     if (_appSettingUDP.ToDatabase)
                     {
                         var strs = package.Split(new string[] { "END;" }, StringSplitOptions.RemoveEmptyEntries);
+
                         foreach (string item in strs)
                         {
                             if (String.IsNullOrWhiteSpace(item))
                                 continue;
 
                             string subMessage = item + "END;";
+                            _logger.LogInformation("Data: " + subMessage);
                             if (_appSettingUDP.IsUseRabbitMQ)
                             {
                                 //var message = new QueueMessage()

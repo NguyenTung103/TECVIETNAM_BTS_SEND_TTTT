@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Core.Model.Report.ReportDay;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -150,6 +151,7 @@ namespace BtsGetwayService
         public static string MaDoMua = "RAIN";
         public static string MaDoGio = "WIND";
         public static string MaMuaNhiet = "RAINTEMP";
+        public static string MuaHoaBinh = "MUA_HOA_BINH";
     }
     public static class Utility
     {
@@ -163,6 +165,31 @@ namespace BtsGetwayService
             {
                 return -9999;
             }
+        }
+        public static string BuildCachedKey(params object[] objects)
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            if (objects != null)
+            {
+                foreach (var item in objects)
+                {
+                    stringBuilder.AppendFormat("{0}_", item);
+                }
+            }
+            return stringBuilder.ToString().TrimEnd('_');
+        }
+        public static DataReportDayValue CreateDataValue(
+        string defaultValue = "0.0",
+        string specialValue = null)
+        {
+            return new DataReportDayValue
+            {
+                Average = defaultValue,
+                Min = defaultValue,
+                Last = defaultValue,
+                Max = specialValue ?? defaultValue,
+                Sum = specialValue ?? defaultValue
+            };
         }
     }
 }

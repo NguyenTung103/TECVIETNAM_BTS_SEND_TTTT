@@ -11,9 +11,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace bts.udpgateway
-{    
-    public class ObservationData : DapperBaseData<Observation>, IObservationData
 {
+    public class ObservationData : DapperBaseData<Observation>, IObservationData
+    {
 
         public ObservationData(IOptions<Connections> option) : base(option.Value.ConnectSqlString)
         {
@@ -25,6 +25,11 @@ namespace bts.udpgateway
             listParameter.Add("@Code", code);
             string query = string.Format(@"select * from Observation where Code=@Code");
             return QueryFirstOrDefault<Observation>(query, listParameter);
+        }
+        public async Task<List<Observation>> GetAll()
+        {
+            string query = string.Format(@"select * from Observation");            
+            return (await QueryAsync<Observation>(query)).ToList();
         }
     }
 }
