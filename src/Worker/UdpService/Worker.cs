@@ -92,6 +92,7 @@ namespace UdpService
                             }
                             else
                             {
+                                _loggingService.Info("message: " + subMessage);
                                 ReturnInfo returnInfo = _udpService.Insert(subMessage).GetAwaiter().GetResult();
                             }
 

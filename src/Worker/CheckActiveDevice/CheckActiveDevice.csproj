@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Worker">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <UserSecretsId>dotnet-CheckActiveDevice-07AA1493-D64F-4926-B6C2-DF211E59A653</UserSecretsId>
   </PropertyGroup>
 
