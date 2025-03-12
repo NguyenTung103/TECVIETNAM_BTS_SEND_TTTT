@@ -7,7 +7,12 @@ namespace Core.Model.Report.ReportDay
     public class ReportDayReponseModel
     {
         public string Time { get; set; }
-        public List<Dictionary<string, DataReportDayValue>> Data { get; set; }
+        public Dictionary<string, DataReportDayValue> Data { get; set; }
+    }
+    public class ReportSumByTimeReponseModel
+    {
+        public string Time { get; set; }
+        public Dictionary<string, decimal> Data { get; set; }
     }
     public class DataReportDayValue
     {      
@@ -19,7 +24,7 @@ namespace Core.Model.Report.ReportDay
     }
     public class DataReportDayEntity
     {
-        public DateTime Date { get; set; }
+        public DateTime TimeSlot { get; set; }
         public int DeviceId { get; set; }
         public int TypeSiteId { get; set; }
         public string Average { get; set; }

@@ -32,7 +32,7 @@ namespace Infrastructure.Udp
         private readonly CacheSettings _cacheSettings;
         Helper helperUlti = new Helper();
         public SiteService(IOptions<CacheSettings> option
-            ,ISiteData siteData
+            , ISiteData siteData
             , IAsyncCacheService cacheService
            )
         {
@@ -52,21 +52,18 @@ namespace Infrastructure.Udp
                     key_ds_tram = string.Join(",", danh_sach_tram);
                 }
                 string strCachedKey = Utility.BuildCachedKey(_cacheKey, "GetDanhSachTram", key_ds_tram);
-                return await _asyncCacheService.GetOrCreateAsync(strCachedKey, async () =>
+                var dsDeviceId = danh_sach_tram.Select(i => Int32.Parse(i.Substring(5))).ToList();
+                var data = (await _siteData.GetDsSite(dsDeviceId));
+                return data.Select(i => new SiteModel
                 {
-                    var dsDeviceId = danh_sach_tram.Select(i => Int32.Parse(i.Substring(5))).ToList();
-                    var data = (await _siteData.GetDsSite(dsDeviceId));
-                    return data.Select(i => new SiteModel
-                    {
-                        station_code = (i.Code == ObservationConstant.MA_TRAM_MUA_HOA_BINH ? ObservationConstant.PREFIX_DO_MUA_HOA_BINH + i.DeviceId.ToString() : i.DeviceId.ToString()),
-                        station_name = i.Name,
-                        latitude = string.IsNullOrEmpty(i.Latitude)?"": i.Latitude.Trim(),
-                        longtitude = string.IsNullOrEmpty(i.Longtitude) ? "" : i.Longtitude.Trim(),
-                        status = (i.IsActive == true ? 1 : 0).ToString(),
-                        address = i.Address,
-                        obs_type = i.TypeSiteId.ToString()
-                    }).ToList();
-                }, _cacheSettings.CacheTime);
+                    station_code = (i.Code_Group == Constant.MuaHoaBinh ? Constant.Prefix_Device_HoaBinh + i.DeviceId.ToString() : i.DeviceId.ToString()),
+                    station_name = i.Name,
+                    latitude = string.IsNullOrEmpty(i.Latitude) ? "" : i.Latitude.Trim(),
+                    longtitude = string.IsNullOrEmpty(i.Longtitude) ? "" : i.Longtitude.Trim(),
+                    status = (i.IsActive == true ? 1 : 0).ToString(),
+                    address = i.Address,
+                    obs_type = i.TypeSiteId.ToString()
+                }).ToList();
             }
             catch (Exception ex)
             {

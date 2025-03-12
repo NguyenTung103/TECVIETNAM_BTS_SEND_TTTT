@@ -17,5 +17,6 @@ namespace Core.MSSQL.Responsitory.Interface
         void UpdateStatusActive(int deviceid);
         void UpdateStatusActive(List<int> lstDeviceid);
         void UpdateStatusDisable(List<int> lstDeviceid);
+        Task<Site> GetByDeviceId(int deviceId);
     }
 }

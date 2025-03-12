@@ -12,5 +12,6 @@ namespace Infrastructure.Udp
     public interface IObservationService
     {
         Task<List<ObservationReponseModel>> GetAllObservation(ObservationRequestModel model);
+        Task<List<DsObservationReponseModel>> GetDsObservation(DsObservationRequestModel model);        
     }
 }

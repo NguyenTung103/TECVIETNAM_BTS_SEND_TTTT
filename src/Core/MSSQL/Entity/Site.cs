@@ -25,6 +25,7 @@ namespace bts.udpgateway
         public string Longtitude { get; set; }
 
         public string TimeZone { get; set; }
+        public string Code_Group { get; set; }
 
         public System.DateTime CreateDay { get; set; }
 

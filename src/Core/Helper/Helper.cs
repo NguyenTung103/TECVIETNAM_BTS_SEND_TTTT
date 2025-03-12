@@ -152,6 +152,7 @@ namespace BtsGetwayService
         public static string MaDoGio = "WIND";
         public static string MaMuaNhiet = "RAINTEMP";
         public static string MuaHoaBinh = "MUA_HOA_BINH";
+        public static string Prefix_Device_HoaBinh = "AQRLG";
     }
     public static class Utility
     {

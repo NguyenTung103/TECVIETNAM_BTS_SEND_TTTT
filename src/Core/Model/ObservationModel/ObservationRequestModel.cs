@@ -8,4 +8,8 @@ namespace Core.Model
     {
         public string station_code { get; set; }
     }
+    public class DsObservationRequestModel
+    {
+        public string station_codes { get; set; }
+    }
 }

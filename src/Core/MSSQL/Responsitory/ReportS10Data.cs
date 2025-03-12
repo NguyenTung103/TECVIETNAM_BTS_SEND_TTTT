@@ -37,47 +37,78 @@ namespace bts.udpgateway
                                             order by id desc", deviceId);
             return QueryFirstOrDefault<ReportS10>(query, null);
         }
-        public List<DataReportDayEntity> GetReportByDay(ReportDayRequestModel model)
+        public List<DataReportDayEntity> GetReportByDay(DateTime fromDate, DateTime toDate, string sensortarget, string dsIdThietBi, int type)
         {
             List<DataReportDayEntity> result = new List<DataReportDayEntity>();
-            string format = "dd-MM-yyyy", query = "";
-            DateTime fromDate = DateTime.Today;
-            DateTime toDate = DateTime.Now;            
             DynamicParameters listParameter = new DynamicParameters();
-            if (!string.IsNullOrEmpty(model.fromDate))
-            {
-                fromDate = DateTime.ParseExact(model.fromDate, format, CultureInfo.InvariantCulture);
-            }
-            if (!string.IsNullOrEmpty(model.toDate))
-            {
-                toDate = DateTime.ParseExact(model.toDate, format, CultureInfo.InvariantCulture);
-            }
             listParameter.Add("@FROM_DATE", fromDate);
-            listParameter.Add("@TO_DATE", toDate);            
-            query = string.Format(@"SELECT 
-    main.DeviceId,
-    tram.TypeSiteId,
-    tram.Code_Group,
-    CAST(DateCreate AS DATE) AS Date,
+            listParameter.Add("@TO_DATE", toDate);
+            string condition = string.Empty;
+            if (!string.IsNullOrEmpty(dsIdThietBi))
+            {
+                listParameter.Add("@DS_DeviceID", dsIdThietBi.Split(","));
+                condition += "AND main.DeviceId IN (SELECT CAST(value AS INT) FROM STRING_SPLIT(@DS_DeviceID, ','))";
+            }
+            string query = string.Format(@"WITH GroupedData AS (
+    SELECT  
+        main.DeviceId,
+        tram.TypeSiteId,
+        tram.Code_Group,
+        DATEADD(DAY, (DATEDIFF(DAY, '2000-01-01', DateCreate) / {1}) * {1}, '2000-01-01') AS TimeSlot,
+        main.DateCreate,
+        main.{0},
+        LAST_VALUE(main.{0}) OVER (
+            PARTITION BY main.DeviceId, 
+                         DATEADD(DAY, (DATEDIFF(DAY, '2000-01-01', main.DateCreate) / {1}) * {1}, '2000-01-01')
+            ORDER BY main.DateCreate 
+            ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+        ) AS last
+    FROM ReportS10 AS main
+    JOIN Site AS tram ON main.DeviceId = tram.DeviceId
+    WHERE main.DateCreate BETWEEN @FROM_DATE AND @TO_DATE {2}
+)
+SELECT  
+    DeviceId,
+    TypeSiteId,
+    Code_Group,
+    TimeSlot,
+    DATEADD(DAY, {1}, TimeSlot) AS EndDate,
     CAST(AVG({0}) AS FLOAT) AS average, 
     CAST(MIN({0}) AS FLOAT) AS min, 
     CAST(MAX({0}) AS FLOAT) AS max, 
     CAST(SUM({0}) AS FLOAT) AS sum,
-    (SELECT TOP 1 {0} 
-     FROM ReportS10 AS sub
-     WHERE sub.DeviceId = main.DeviceId  
-     AND CAST(sub.DateCreate AS DATE) = CAST(main.DateCreate AS DATE)
-     AND sub.DateCreate BETWEEN @FROM_DATE AND @TO_DATE
-     ORDER BY sub.DateCreate DESC) AS last
+    MAX(last) AS last -- Vì LAST_VALUE có thể trùng giá trị nhiều dòng nên dùng MAX để lấy giá trị duy nhất
+FROM GroupedData
+GROUP BY DeviceId, TypeSiteId, Code_Group, TimeSlot
+ORDER BY DeviceId, TimeSlot;
+
+ ", sensortarget, type, condition);           
+            result = Query<DataReportDayEntity>(query, listParameter).ToList();
+            return result;
+        }
+        public List<DataReportDayEntity> GetReportSumByTime(DateTime fromDate, DateTime toDate, string sensortarget, string dsIdThietBi, int type)
+        {
+            List<DataReportDayEntity> result = new List<DataReportDayEntity>();
+            DynamicParameters listParameter = new DynamicParameters();
+            listParameter.Add("@FROM_DATE", fromDate);
+            listParameter.Add("@TO_DATE", toDate);
+            string query = string.Format(@"SELECT 
+    main.DeviceId,
+    tram.TypeSiteId,
+    tram.Code_Group,
+    DATEADD(MINUTE, (DATEDIFF(MINUTE, 0, DateCreate) / 5) * {1}, 0) AS TimeSlot,  
+    CAST(SUM({0}) AS FLOAT) AS sum   
 FROM ReportS10 AS main
-Join Site as tram on main.DeviceId = tram.DeviceId
-WHERE DateCreate BETWEEN @FROM_DATE AND @TO_DATE ", model.sensorTarget);
-            if (!string.IsNullOrEmpty(model.stationCodes))
-            {                
-                listParameter.Add("@DS_DeviceID", model.stationCodes.Split(","));
+JOIN Site AS tram ON main.DeviceId = tram.DeviceId
+WHERE DateCreate BETWEEN @FROM_DATE AND @TO_DATE
+ ", sensortarget, type);
+            if (!string.IsNullOrEmpty(dsIdThietBi))
+            {
+                listParameter.Add("@DS_DeviceID", dsIdThietBi.Split(","));
                 query += "AND main.DeviceId IN (SELECT CAST(value AS INT) FROM STRING_SPLIT(@DS_DeviceID, ','))";
             }
-            query += "GROUP BY main.DeviceId,Code_Group,TypeSiteId, CAST(DateCreate AS DATE) ORDER BY main.DeviceId, Date;";
+            query += string.Format(@" GROUP BY main.DeviceId, tram.Code_Group, tram.TypeSiteId, 
+         DATEADD(MINUTE, (DATEDIFF(MINUTE, 0, DateCreate) / 5) * {0}, 0) ORDER BY main.DeviceId, TimeSlot;", type);
             result = Query<DataReportDayEntity>(query, listParameter).ToList();
             return result;
         }

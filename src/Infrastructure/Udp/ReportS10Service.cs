@@ -7,6 +7,7 @@ using Core.Model;
 using Core.Model.Report.ReportDay;
 using Core.MSSQL.Responsitory.Interface;
 using Core.Setting;
+using Dapper;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections;
@@ -23,9 +24,7 @@ namespace Infrastructure.Udp
         public readonly IReportS10Data _reportS10Data;
         public readonly ISiteData _siteData;
         public readonly AppApiWatecSetting _appApiWatecSetting;
-        private readonly CacheSettings _cacheSettings;
         private readonly ILoggingService _loggingService;
-        private readonly IAsyncCacheService _asyncCacheService;
         private string _cacheKey;
         public ReportS10Service(IReportS10Data reportS10Data
             , ISiteData siteData
@@ -37,11 +36,9 @@ namespace Infrastructure.Udp
         {
             _cacheKey = "ReportS10Service";
             _reportS10Data = reportS10Data;
-            _asyncCacheService = cacheService;
             _siteData = siteData;
             _appApiWatecSetting = appApiWatecSetting.Value;
             _loggingService = loggingService;
-            _cacheSettings = option.Value;
         }
         public ReportS10 InitS10(string message)
         {
@@ -390,47 +387,74 @@ namespace Infrastructure.Udp
             }
             return _reportS10Data.Query<ReportS10>(query);
         }
-        public async Task<List<ReportDayReponseModel>> GetReportByDay(ReportDayRequestModel model)
+        public async Task<List<ReportDayReponseModel>> GetReportByDay(DateTime fromDate, DateTime toDate, string sensortarget, string dsIdThietBi, int type)
         {
-            string strCachedKey = Utility.BuildCachedKey(_cacheKey, "GetReportByDay", model.sensorTarget, model.toDate, model.fromDate, model.stationCodes);
-            //return await _asyncCacheService.GetOrCreateAsync(strCachedKey, async () =>
-            //{
-                List<ReportDayReponseModel> result = new List<ReportDayReponseModel>();
-                var dataSql = _reportS10Data.GetReportByDay(model);
-                var dsDay = dataSql.Select(i => i.Date).Distinct();
-                foreach (var item in dsDay)
+            List<ReportDayReponseModel> result = new List<ReportDayReponseModel>();
+            var dataSql = _reportS10Data.GetReportByDay(fromDate, toDate, sensortarget, dsIdThietBi, type);
+            var dsDay = dataSql.Select(i => i.TimeSlot).Distinct().OrderBy(i => i.Day);
+            foreach (var item in dsDay)
+            {
+                ReportDayReponseModel reportDay = new ReportDayReponseModel();
+                reportDay.Time = item.ToString("HH:mm dd/MM/yyyy");
+                var dsDataReport = dataSql.Where(i => i.TimeSlot == item).ToList();
+                var dataByThietBi = new Dictionary<string, DataReportDayValue>();
+                foreach (var report in dsDataReport)
                 {
-                    ReportDayReponseModel reportDay = new ReportDayReponseModel();
-                    reportDay.Time = item.ToString("HH:mm dd/MM/yyyy");
-                    var dsDataReport = dataSql.Where(i => i.Date == item).ToList();
-                    var listDatByDay = new List<Dictionary<string, DataReportDayValue>>();
-                    foreach (var report in dsDataReport)
+
+                    string key = string.Empty;
+                    if (report.Code_Group == Constant.MuaHoaBinh)
                     {
-                        var dataByThietBi = new Dictionary<string, DataReportDayValue>();
-                        string key = string.Empty;
-                        if (report.Code_Group == Constant.MuaHoaBinh)
-                        {
-                            key = $"AQRLG{report.DeviceId}_{report.TypeSiteId}_Sum";
-                        }
-                        else
-                        {
-                            key = $"{report.DeviceId}_{report.TypeSiteId}_Sum";
-                        }
-                        dataByThietBi[key] = new DataReportDayValue
-                        {
-                            Average = report.Average,
-                            Min = report.Min,
-                            Last = report.Last,
-                            Max = report.Max,
-                            Sum = report.Sum
-                        };
-                        listDatByDay.Add(dataByThietBi);
+                        key = $"{Constant.Prefix_Device_HoaBinh}{report.DeviceId}_{report.TypeSiteId}_Sum";
                     }
-                    reportDay.Data = listDatByDay;
-                    result.Add(reportDay);
+                    else
+                    {
+                        key = $"{report.DeviceId}_{report.TypeSiteId}_Sum";
+                    }
+                    dataByThietBi[key] = new DataReportDayValue
+                    {
+                        Average = report.Average,
+                        Min = report.Min,
+                        Last = report.Last,
+                        Max = report.Max,
+                        Sum = report.Sum
+                    };
                 }
-                return result;
-            //}, _cacheSettings.CacheTime);            
+                reportDay.Data = dataByThietBi;
+                result.Add(reportDay);
+            }
+            return result;
+
+        }
+        public async Task<List<ReportSumByTimeReponseModel>> GetReportSumByTime(DateTime fromDate, DateTime toDate, string sensortarget, string dsIdThietBi, int type)
+        {
+            List<ReportSumByTimeReponseModel> result = new List<ReportSumByTimeReponseModel>();
+            var dataSql = _reportS10Data.GetReportSumByTime(fromDate, toDate, sensortarget, dsIdThietBi, type);
+            var dsDay = dataSql.Select(i => i.TimeSlot).Distinct().OrderBy(i => i.Day);
+            var listDatByDay = new Dictionary<string, decimal>();
+            foreach (var item in dsDay)
+            {
+                ReportSumByTimeReponseModel reportDay = new ReportSumByTimeReponseModel();
+                reportDay.Time = item.ToString("HH:mm dd/MM/yyyy");
+                var dsDataReport = dataSql.Where(i => i.TimeSlot == item).ToList();
+
+                foreach (var report in dsDataReport)
+                {
+                    string key = string.Empty;
+                    if (report.Code_Group == Constant.MuaHoaBinh)
+                    {
+                        key = $"{Constant.Prefix_Device_HoaBinh}{report.DeviceId}_{report.TypeSiteId}_Sum";
+                    }
+                    else
+                    {
+                        key = $"{report.DeviceId}_{report.TypeSiteId}_Sum";
+                    }
+                    listDatByDay[key] = !string.IsNullOrEmpty(report.Sum) ? decimal.Parse(report.Sum) : 0;
+                }
+                reportDay.Data = listDatByDay;
+                result.Add(reportDay);
+            }
+            return result;
+
         }
     }
 }

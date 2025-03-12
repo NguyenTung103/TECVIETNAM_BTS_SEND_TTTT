@@ -67,8 +67,7 @@ namespace bts.udpgateway
             string query = string.Format(@"select * from Site s left join RegionalGroup rg on s.Group_Id = rg.Id");
             if (dsDeviceId.Any())
             {
-                query += "where s.DeviceId IN(@DS_DeviceId)";
-                listParameter.Add("@DS_DeviceId", dsDeviceId);
+                query +=string.Format(@" where s.DeviceId IN ({0})",string.Join(',',dsDeviceId));                
             }
             
             return await QueryAsync<Site>(query, listParameter);
@@ -78,6 +77,13 @@ namespace bts.udpgateway
             DynamicParameters listParameter = new DynamicParameters();
             listParameter.Add("@DeviceID", deviceId);
             string query = string.Format(@"select * from Site where DeviceId=@DeviceID and IsActive=1");
+            return await QueryFirstOrDefaultAsync<Site>(query, listParameter);
+        }
+        public async Task<Site> GetByDeviceId(int deviceId)
+        {
+            DynamicParameters listParameter = new DynamicParameters();
+            listParameter.Add("@DeviceID", deviceId);
+            string query = string.Format(@"select * from Site where DeviceId=@DeviceID");
             return await QueryFirstOrDefaultAsync<Site>(query, listParameter);
         }
     }

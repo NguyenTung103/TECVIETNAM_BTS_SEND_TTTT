@@ -11,6 +11,7 @@ namespace bts.udpgateway
     public class Observation
     {
         public int Id { get; set; }
+        public Nullable<int> CategoryTypeSite { get; set; }
         public Nullable<bool> Noti_Alarm { get; set; }
         public string Name { get; set; }
         public string Code { get; set; }

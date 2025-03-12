@@ -1,4 +1,5 @@
-﻿using Core.Setting;
+﻿using Core.Model.ReponseModel;
+using Core.Setting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
@@ -27,7 +28,7 @@ namespace Api_Watec.Controllers
             _config = config;
         }
         [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginModel model)
+        public ActionResult<AuthModel> Login([FromBody] LoginModel model)
         {
             if (!(model.Username == _jwtAccountConfig.Username && model.Password == _jwtAccountConfig.Password))
             {
@@ -38,13 +39,15 @@ namespace Api_Watec.Controllers
             var refreshToken = GenerateRefreshToken();
 
             userRefreshTokens[model.Username] = refreshToken; // Lưu Refresh Token cho user
-
-            return Ok(new TokenModel { AccessToken = accessToken, RefreshToken = refreshToken });
+            AuthModel result = new AuthModel();
+            result.status = 200;
+            result.result = new TokenModel { ApiKey = accessToken, RefreshToken = refreshToken };
+            return result;
         }
         [HttpPost("refresh")]
-        public IActionResult RefreshToken([FromBody] TokenModel tokenModel)
+        public ActionResult<AuthModel> RefreshToken([FromBody] TokenModel tokenModel)
         {
-            var principal = GetPrincipalFromExpiredToken(tokenModel.AccessToken);
+            var principal = GetPrincipalFromExpiredToken(tokenModel.ApiKey);
             if (principal == null)
             {
                 return Unauthorized("Không tồn tại access token");
@@ -60,8 +63,10 @@ namespace Api_Watec.Controllers
             var newRefreshToken = GenerateRefreshToken();
 
             userRefreshTokens[username] = newRefreshToken; // Cập nhật Refresh Token mới
-
-            return Ok(new TokenModel { AccessToken = newAccessToken, RefreshToken = newRefreshToken });
+            AuthModel result = new AuthModel();
+            result.status = 200;
+            result.result = new TokenModel { ApiKey = newAccessToken, RefreshToken = newRefreshToken };
+            return result;            
         }
         [HttpPost("revoke")]
         public IActionResult Revoke([FromBody] string username)
@@ -133,7 +138,12 @@ namespace Api_Watec.Controllers
 
     public class TokenModel
     {
-        public string AccessToken { get; set; }
+        public string ApiKey { get; set; }
         public string RefreshToken { get; set; }
+    }
+    public class AuthModel
+    {
+        public int status { get; set; }
+        public TokenModel result { get; set; }
     }
 }

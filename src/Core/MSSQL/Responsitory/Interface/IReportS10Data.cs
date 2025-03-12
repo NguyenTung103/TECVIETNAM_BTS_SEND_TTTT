@@ -12,6 +12,7 @@ namespace Core.MSSQL.Responsitory.Interface
     {
         IEnumerable<ReportS10> GetByTime(DateTime from, DateTime to, int deviceId);
         ReportS10 GetLatest(int deviceId);
-        List<DataReportDayEntity> GetReportByDay(ReportDayRequestModel model);
+        List<DataReportDayEntity> GetReportByDay(DateTime fromDate, DateTime toDate, string sensortarget, string dsIdThietBi, int type);
+        List<DataReportDayEntity> GetReportSumByTime(DateTime fromDate, DateTime toDate, string sensortarget, string dsIdThietBi, int type);
     }
 }
