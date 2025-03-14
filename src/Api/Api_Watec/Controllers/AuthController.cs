@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -33,100 +34,71 @@ namespace Api_Watec.Controllers
             if (!(model.Username == _jwtAccountConfig.Username && model.Password == _jwtAccountConfig.Password))
             {
                 return Unauthorized();
-            }
-
-            var accessToken = GenerateJwtToken(model.Username);
+            }            
             var refreshToken = GenerateRefreshToken();
 
-            userRefreshTokens[model.Username] = refreshToken; // Lưu Refresh Token cho user
+            RefreshTokenStore.Tokens.Add(new UserRefreshToken
+            {
+                Username = model.Username,
+                RefreshToken = refreshToken,
+                ExpiryDate = DateTime.UtcNow.AddDays(7)
+            });
+            var accessToken = GenerateJwtToken(model.Username);            
+
+            //userRefreshTokens[model.Username] = refreshToken; // Lưu Refresh Token cho user
             AuthModel result = new AuthModel();
             result.status = 200;
             result.result = new TokenModel { ApiKey = accessToken, RefreshToken = refreshToken };
             return result;
         }
         [HttpPost("refresh")]
-        public ActionResult<AuthModel> RefreshToken([FromBody] TokenModel tokenModel)
+        public IActionResult RefreshToken([FromBody] UserRefreshTokenRequest model)
         {
-            var principal = GetPrincipalFromExpiredToken(tokenModel.ApiKey);
-            if (principal == null)
+            var storedToken = RefreshTokenStore.Tokens.FirstOrDefault(t => t.RefreshToken == model.RefreshToken);
+            if (storedToken == null || storedToken.ExpiryDate < DateTime.UtcNow)
             {
-                return Unauthorized("Không tồn tại access token");
+                return Unauthorized("Invalid or expired refresh token");
             }
 
-            var username = principal.Identity.Name;
-            if (!userRefreshTokens.TryGetValue(username, out var savedRefreshToken) || savedRefreshToken != tokenModel.RefreshToken)
-            {
-                return Unauthorized("Không tồn tại refresh token");
-            }
-
-            var newAccessToken = GenerateJwtToken(username);
+            var newAccessToken = GenerateJwtToken(storedToken.Username);
             var newRefreshToken = GenerateRefreshToken();
 
-            userRefreshTokens[username] = newRefreshToken; // Cập nhật Refresh Token mới
-            AuthModel result = new AuthModel();
-            result.status = 200;
-            result.result = new TokenModel { ApiKey = newAccessToken, RefreshToken = newRefreshToken };
-            return result;            
-        }
-        [HttpPost("revoke")]
-        public IActionResult Revoke([FromBody] string username)
-        {
-            if (userRefreshTokens.ContainsKey(username))
-            {
-                userRefreshTokens.Remove(username);
-                return Ok("Refresh Token revoked.");
-            }
-            return NotFound("User not found.");
+            // Cập nhật Refresh Token mới
+            storedToken.RefreshToken = newRefreshToken;
+            storedToken.ExpiryDate = DateTime.UtcNow.AddDays(7);
+
+            return Ok(new { AccessToken = newAccessToken, RefreshToken = newRefreshToken });
         }
         private string GenerateJwtToken(string username)
         {
-            var key = Encoding.UTF8.GetBytes(_jwtSetting.ScretKey);
-            var claims = new List<Claim>
+            var jwtSettings = _config.GetSection("Jwt");
+            var key = Encoding.ASCII.GetBytes(jwtSettings["Key"]);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
             {
+                Subject = new ClaimsIdentity(new[]
+                {
                 new Claim(ClaimTypes.Name, username),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            };
-
-            var token = new JwtSecurityToken(
-                issuer: _jwtSetting.Issuer,
-                audience: _jwtSetting.Audience,
-                claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(1), // Token ngắn hạn
-                signingCredentials: new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-        private string GenerateRefreshToken()
-        {
-            return Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
-        }
-        private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
-        {
-            var key = Encoding.UTF8.GetBytes(_jwtSetting.ScretKey);
-
-            var tokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                ValidIssuer = _jwtSetting.Issuer,
-                ValidAudience = _jwtSetting.Audience,
-                IssuerSigningKey = new SymmetricSecurityKey(key)
+                new Claim(ClaimTypes.Role, "Admin")
+            }),
+                Expires = DateTime.UtcNow.AddMinutes(Convert.ToDouble(jwtSettings["AccessTokenExpireMinutes"])),
+                Issuer = jwtSettings["Issuer"],
+                Audience = jwtSettings["Audience"],
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            SecurityToken securityToken;
-            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out securityToken);
-            var jwtSecurityToken = securityToken as JwtSecurityToken;
-
-            if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+        }
+        private string GenerateRefreshToken()
+        {
+            var randomBytes = new byte[32];
+            using (var rng = RandomNumberGenerator.Create())
             {
-                throw new SecurityTokenException("Invalid token");
+                rng.GetBytes(randomBytes);
             }
-
-            return principal;
+            return Convert.ToBase64String(randomBytes);
         }
     }
 
@@ -139,11 +111,26 @@ namespace Api_Watec.Controllers
     public class TokenModel
     {
         public string ApiKey { get; set; }
-        public string RefreshToken { get; set; }
+        public string RefreshToken { get; set; }        
     }
     public class AuthModel
     {
         public int status { get; set; }
         public TokenModel result { get; set; }
+    }
+    public class UserRefreshToken
+    {
+        public string Username { get; set; }
+        public string RefreshToken { get; set; }
+        public DateTime ExpiryDate { get; set; }
+    }
+    public class UserRefreshTokenRequest
+    {
+        public string Username { get; set; }
+        public string RefreshToken { get; set; }        
+    }
+    public static class RefreshTokenStore
+    {
+        public static List<UserRefreshToken> Tokens = new List<UserRefreshToken>();
     }
 }

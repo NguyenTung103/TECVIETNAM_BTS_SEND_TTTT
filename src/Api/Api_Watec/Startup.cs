@@ -6,6 +6,7 @@ using Core.Setting;
 using Infrastructure.Udp;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -36,21 +37,29 @@ namespace Api_Watec
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHttpClient();
-            services.Configure<JWT>(Configuration.GetSection("JWT"));
+            var jwtSettings = Configuration.GetSection("JWT");
+            var key = Encoding.ASCII.GetBytes(jwtSettings["Key"]);
+            services.AddHttpClient();            
             services.Configure<JwtAccountConfig>(Configuration.GetSection("JwtAccountConfig"));
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
             .AddJwtBearer(options =>
             {
+                options.RequireHttpsMetadata = false;
+                options.SaveToken = true;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = Configuration["JWT:Issuer"],
-                    ValidAudience = Configuration["JWT:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:ScretKey"]))
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = true,
+                    ValidIssuer = jwtSettings["Issuer"],
+                    ValidateAudience = true,
+                    ValidAudience = jwtSettings["Audience"],
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
                 };
             });
             services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(Configuration.GetSection("RedisCacheConfig")["Configuration"]));
@@ -71,8 +80,7 @@ namespace Api_Watec
             services.AddSingleton<IObservationService, ObservationService>();
             services.AddSingleton<IAsyncCacheService, RedisCacheService>();            
             services.AddLog4net();
-
-
+            
             services.AddSingleton<ISiteService, SiteService>();
             services.AddSwaggerGen(options =>
             {
@@ -104,6 +112,7 @@ namespace Api_Watec
                     }
                 });
             });
+            services.AddAuthorization();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

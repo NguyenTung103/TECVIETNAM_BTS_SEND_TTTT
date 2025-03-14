@@ -28,9 +28,10 @@ namespace Core.Setting
     }
     public class JWT
     {
+        public string Key { get; set; }
         public string Issuer { get; set; }
         public string Audience { get; set; }
-        public string ScretKey { get; set; }
+        public int ExpireMinutes { get; set; }
     }
     public class JwtAccountConfig
     {

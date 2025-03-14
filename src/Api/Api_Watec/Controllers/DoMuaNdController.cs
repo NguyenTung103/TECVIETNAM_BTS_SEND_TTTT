@@ -91,7 +91,7 @@ namespace ApiWatec.Controllers
         [HttpGet("test")]
         [Authorize]
         public ActionResult<string> test()
-        {           
+        {            
             return Ok("test");
         }
     }
