@@ -6,7 +6,9 @@ using BtsGetwayService.MongoDb.Entity;
 using Core.Logging;
 using Core.MSSQL.Responsitory.Interface;
 using Core.Setting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -35,7 +37,7 @@ namespace Infrastructure.Udp
         public readonly IReportS10Service _reportS10Service;
         public readonly IReportDailyService _reportDailyService;
 
-
+        private readonly ILogger<UdpService> _logger;
         Helper helperUlti = new Helper();
         public UdpService(IOptions<AppSettingUDP> option,
             IGroupData groupData,
@@ -48,7 +50,8 @@ namespace Infrastructure.Udp
             IReportS10Service reportS10Service,
             IReportDailyService reportDailyService,
             IDataObservationService dataObservationMongoService,
-            IDataAlarmService dataAlarmService
+            IDataAlarmService dataAlarmService,
+            ILogger<UdpService> logger
            )
         {
             _appSetting = option.Value;
@@ -63,6 +66,7 @@ namespace Infrastructure.Udp
             _dataAlarmService = dataAlarmService;
             _reportS10Service = reportS10Service;
             _reportDailyService = reportDailyService;
+            _logger = logger;
         }
         public async Task<ReturnInfo> Insert(string msg_content)
         {
@@ -781,36 +785,45 @@ namespace Infrastructure.Udp
 
             return result;
         }
-        public async void CheckDeviceS10()
+        public async Task CheckDeviceS10()
         {
-            List<Site> lst = new List<Site>();
-            lst = _siteData.FindAll().ToList();
-            List<int> lstDeviceId = new List<int>();
-            List<int> lstDeviceIdUpdateActive = new List<int>();
-            foreach (var item in lst)
+            try
             {
-                try
+                List<Site> lst = new List<Site>();
+                lst = _siteData.FindAll().ToList();
+                List<int> lstDeviceId = new List<int>();
+                List<int> lstDeviceIdUpdateActive = new List<int>();
+                foreach (var item in lst)
                 {
-                    var start = DateTime.Now.AddMinutes(-20); //2017-04-05 15:21:23.234
-                    var end = DateTime.Now;//2017-04-04 15:21:23.234                                                                              
-                    var lstData = _reportS10Service.GetByTime(start, end, item.DeviceId.Value, null, null, null);
-                    if ((lstData != null && lstData.Count() == 0) || lstData == null)
+                    try
                     {
-                        lstDeviceId.Add(item.DeviceId.Value);
+                        var start = DateTime.Now.AddMinutes(-20); //2017-04-05 15:21:23.234
+                        var end = DateTime.Now;//2017-04-04 15:21:23.234                                                                              
+                        var lstData = _reportS10Service.GetByTime(start, end, item.DeviceId.Value, null, null, null);
+                        if (lstData.Any())
+                        {
+                            lstDeviceIdUpdateActive.Add(item.DeviceId.Value);
+                        }
+                        else
+                        {
+                            lstDeviceId.Add(item.DeviceId.Value);
+                        }
                     }
-                    else
+                    catch (Exception)
                     {
-                        lstDeviceIdUpdateActive.Add(item.DeviceId.Value);
                     }
                 }
-                catch (Exception)
-                {
-                }
-            }
 
-            _siteData.UpdateStatusDisable(lstDeviceId);
-            _siteData.UpdateStatusActive(lstDeviceIdUpdateActive);
-            await Core.Helper.ApiSend.Call_PostDataAsync(null, _appSetting.UrlDomainWebQuanTrac, "Administrator/SuperAdmin/CacheManagerRemoveAll", null);
+                _siteData.UpdateStatusDisable(lstDeviceId);
+                _siteData.UpdateStatusActive(lstDeviceIdUpdateActive);
+                _logger.LogInformation("update disable: "+ string.Join(",",lstDeviceId) + "\n update active: "+ string.Join(",", lstDeviceIdUpdateActive));
+                await Core.Helper.ApiSend.Call_PostDataAsync(null, _appSetting.UrlDomainWebQuanTrac, "Administrator/SuperAdmin/CacheManagerRemoveAll", null);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi cập nhật");
+            }
+            
         }
     }
 }

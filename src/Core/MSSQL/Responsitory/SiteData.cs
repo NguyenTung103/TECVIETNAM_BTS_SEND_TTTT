@@ -40,7 +40,7 @@ namespace bts.udpgateway
         }
         public void UpdateStatusActive(int deviceid)
         {
-            string query = string.Format(@"update site set IsActive=0 where DeviceId ={0}", deviceid);
+            string query = string.Format(@"update site set IsActive=1 where DeviceId ={0}", deviceid);
             Execute(query, null);
         }
         public void UpdateStatusDisable(List<int> lstDeviceid)

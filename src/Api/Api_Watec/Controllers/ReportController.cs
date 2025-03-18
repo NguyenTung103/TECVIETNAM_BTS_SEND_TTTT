@@ -36,36 +36,8 @@ namespace ApiWatec.Controllers
             _logger = logger;
             _reportS10Service = reportS10Service;
             _observationService = observationService;
-        }
-        [HttpPost("GetReportByDay")]
-        [Authorize]
-        public async Task<ActionResult<ReponseData>> GetReportByDay([FromBody]ReportDayRequestModel model)
-        {
-            ReponseData reponse = new ReponseData();
-            reponse.status = ObservationConstant.THANH_CONG;
-            try
-            {
-                string format = "dd-MM-yyyy";
-                DateTime fromDate = DateTime.Today;
-                DateTime toDate = DateTime.Now;               
-                if (!string.IsNullOrEmpty(model.fromDate))
-                {
-                    fromDate = DateTime.ParseExact(model.fromDate, format, CultureInfo.InvariantCulture);
-                }
-                if (!string.IsNullOrEmpty(model.toDate))
-                {
-                    toDate = DateTime.ParseExact(model.toDate, format, CultureInfo.InvariantCulture);
-                }               
-                reponse.result = await _reportS10Service.GetReportByDay(fromDate, toDate, model.sensorTarget, model.stationCodes, model.type);                
-            }
-            catch (Exception ex)
-            {
-                reponse.status = ObservationConstant.THAT_BAI;
-                reponse.Message = ex.Message;
-            }
-            return reponse;
-        }
-        [HttpPost("GetReportByTime")]
+        }        
+        [HttpPost("data")]
         [Authorize]
         public async Task<ActionResult<ReponseData>> GetReportByTime([FromBody] ReportDayRequestModel model)
         {
@@ -73,10 +45,10 @@ namespace ApiWatec.Controllers
             reponse.status = ObservationConstant.THANH_CONG;
             try
             {
+                var (type, typeTime) = ObservationConstant.PARAMS_API_REPORT[model.type];
                 string format = "dd-MM-yyyy", query = "";
                 DateTime fromDate = DateTime.Today;
-                DateTime toDate = DateTime.Now;
-                DynamicParameters listParameter = new DynamicParameters();
+                DateTime toDate = DateTime.Now;                
                 if (!string.IsNullOrEmpty(model.fromDate))
                 {
                     fromDate = DateTime.ParseExact(model.fromDate, format, CultureInfo.InvariantCulture);
@@ -85,18 +57,15 @@ namespace ApiWatec.Controllers
                 {
                     toDate = DateTime.ParseExact(model.toDate, format, CultureInfo.InvariantCulture);
                 }
-                int daysDifference = (toDate.Date - fromDate.Date).Days;
-                if (daysDifference > 1)
+                if(type==1)
                 {
-                    reponse.status = ObservationConstant.THAT_BAI;
-                    reponse.Message = "Chỉ cho phép lấy tối đa khoảng thời gian trong 1 ngày";
-                    return reponse;
+                    reponse.result = await _reportS10Service.GetReportSumByTime(fromDate, toDate, model.sensorTarget, model.stationCodes, typeTime);
                 }
                 else
                 {
-                    reponse.result = await _reportS10Service.GetReportSumByTime(fromDate, toDate, model.sensorTarget, model.stationCodes, model.type);
-                }
-                   
+                    reponse.result = await _reportS10Service.GetReportByDay(fromDate, toDate, model.sensorTarget, model.stationCodes, typeTime);
+                }               
+
             }
             catch (Exception ex)
             {

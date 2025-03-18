@@ -26,19 +26,16 @@ namespace Infrastructure.Udp
     public class SiteService : ISiteService
     {
         public readonly ISiteData _siteData;
-        private readonly ILoggingService _loggingService;
-        private readonly IAsyncCacheService _asyncCacheService;
+        private readonly ILoggingService _loggingService;        
         private string _cacheKey;
         private readonly CacheSettings _cacheSettings;
         Helper helperUlti = new Helper();
         public SiteService(IOptions<CacheSettings> option
-            , ISiteData siteData
-            , IAsyncCacheService cacheService
+            , ISiteData siteData            
            )
         {
             _cacheKey = "TramService";
-            _siteData = siteData;
-            _asyncCacheService = cacheService;
+            _siteData = siteData;            
             _cacheSettings = option.Value;
         }
         public async Task<List<SiteModel>> GetDanhSachTram(List<string> danh_sach_tram)

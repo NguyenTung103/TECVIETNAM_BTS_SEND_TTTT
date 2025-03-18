@@ -22,22 +22,19 @@ namespace Infrastructure.Udp
     public class ObservationService : IObservationService
     {
         private readonly CacheSettings _cacheSettings;
-        private readonly ILoggingService _loggingService;
-        private readonly IAsyncCacheService _asyncCacheService;
+        private readonly ILoggingService _loggingService;        
         private readonly IObservationData _observationData;
         private readonly ISiteData _siteData;
         private string _cacheKey;
         public ObservationService(IReportS10Data reportS10Data
             , IObservationData observationData
-            , ILoggingService loggingService
-            , IAsyncCacheService cacheService
+            , ILoggingService loggingService            
             , ISiteData siteData
             , IOptions<CacheSettings> option
             )
         {
             _cacheKey = "ObservationService";
-            _observationData = observationData;
-            _asyncCacheService = cacheService;
+            _observationData = observationData;            
             _loggingService = loggingService;
             _siteData = siteData;
             _cacheSettings = option.Value;

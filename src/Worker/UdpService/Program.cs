@@ -34,13 +34,13 @@ namespace UdpService
                     //services.Configure<MasterRabbitmqConnection>(hostContext.Configuration.GetSection("MasterRabbitmqConnection"));
                     //services.AddSingleton<IMasterMessageQueueService, MasterRabbitmqService>();
                     //services.AddSingleton<IWorkerMessageQueueService, WorkerRabbitmqService>();
-                    services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(hostContext.Configuration.GetSection("RedisCacheConfig")["Configuration"]));
-                    services.AddStackExchangeRedisCache(option =>
-                    {
-                        option.Configuration = hostContext.Configuration.GetSection("RedisCacheConfig")["Configuration"];
-                        option.InstanceName = hostContext.Configuration.GetSection("RedisCacheConfig")["InstanceName"];
-                    });
-                    services.Configure<CacheSettings>(hostContext.Configuration.GetSection("CacheSettings"));
+                    //services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(hostContext.Configuration.GetSection("RedisCacheConfig")["Configuration"]));
+                    //services.AddStackExchangeRedisCache(option =>
+                    //{
+                    //    option.Configuration = hostContext.Configuration.GetSection("RedisCacheConfig")["Configuration"];
+                    //    option.InstanceName = hostContext.Configuration.GetSection("RedisCacheConfig")["InstanceName"];
+                    //});
+                   // services.Configure<CacheSettings>(hostContext.Configuration.GetSection("CacheSettings"));
                     services.AddSingleton<IGroupData, GroupData>();
                     services.AddSingleton<IReportS10Data, ReportS10Data>();
                     services.AddSingleton<ISiteData, SiteData>();

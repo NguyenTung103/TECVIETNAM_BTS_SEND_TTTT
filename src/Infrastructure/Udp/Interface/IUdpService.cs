@@ -13,6 +13,6 @@ namespace Infrastructure.Udp
     {
         Task<ReturnInfo> Insert(string msg_content);
         ReturnInfo SendCommand(string message, IPEndPoint endPoint, UdpClient udpClient);
-        void CheckDeviceS10();
+        Task CheckDeviceS10();
     }
 }

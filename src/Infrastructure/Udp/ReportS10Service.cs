@@ -29,8 +29,7 @@ namespace Infrastructure.Udp
         public ReportS10Service(IReportS10Data reportS10Data
             , ISiteData siteData
             , ILoggingService loggingService
-            , IOptions<AppApiWatecSetting> appApiWatecSetting
-            , IAsyncCacheService cacheService
+            , IOptions<AppApiWatecSetting> appApiWatecSetting            
             , IOptions<CacheSettings> option
             )
         {

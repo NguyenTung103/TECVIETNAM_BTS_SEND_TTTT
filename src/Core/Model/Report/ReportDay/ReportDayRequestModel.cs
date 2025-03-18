@@ -8,7 +8,7 @@ namespace Core.Model.Report.ReportDay
     {
         public string fromDate { get; set; }
         public string toDate { get; set; }
-        public int type { get; set; }
+        public string type { get; set; }
         public string sensorTarget { get; set; }
         public string stationCodes { get; set; }
     }
