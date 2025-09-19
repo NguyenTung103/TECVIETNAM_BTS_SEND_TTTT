@@ -369,6 +369,7 @@ namespace GetDataByMonth
                         var from = date.AddMinutes(i * 10);
                         var to = date.AddMinutes((i + 1) * 10);
                         string appConfigPath = _appSetting.FolderLuuTruFile + @"\" + thang.ToString() + @"\";
+                        _loggingService.Info("item.DateCreate is null");
                         foreach (var grp in lstGroup)
                         {
                             //string userName = grp.FtpAccount.Trim();
@@ -390,32 +391,59 @@ namespace GetDataByMonth
                                         if (reportS10ByDevice != null && reportS10ByDevice.Count() > 0)
                                             foreach (var item in reportS10ByDevice)
                                             {
-                                                ModelFileKhiTuongS10Json modelFileS10Json = new ModelFileKhiTuongS10Json();
-                                                modelFileS10Json.StationNo = item.DeviceId.Value.ToString();
-                                                modelFileS10Json.Datadate = double.Parse(item.DateCreate.Value.ToString("yyyyMMddHHmmss"));
-                                                modelFileS10Json.T2m = item.MTI.Value;
-                                                modelFileS10Json.T2mmax = item.MTX.Value;
-                                                modelFileS10Json.T2mmin = item.MTM.Value;
-                                                modelFileS10Json.Rh2m = item.MHU.Value;
-                                                modelFileS10Json.R2mmax = item.MHX.Value;
-                                                modelFileS10Json.R2mmin = item.MHM.Value;
-                                                modelFileS10Json.PS = item.MAV.Value;
-                                                modelFileS10Json.FF10m = item.MSM.Value;
-                                                modelFileS10Json.DD10m = item.MDM.Value;
-                                                modelFileS10Json.FxFx = item.MSS.Value;
-                                                modelFileS10Json.DxDx = item.MDS.Value;
-                                                modelFileS10Json.DtdateFxDx = item.MHR.Value;
-                                                modelFileS10Json.Rain10m = item.MRT.Value;
-                                                modelFileS10Json.Rain1h = item.MRH.Value;
-                                                modelFileS10Json.Rain19h = item.MRC.Value;
-                                                modelFileS10Json.Rain00h = item.MRB.Value;
-                                                modelFileS10Json.Battery = item.MVC.Value;
-                                                dataTramKhiTuong.Add(modelFileS10Json);
-                                                dateTimeStr = modelFileS10Json.Datadate.ToString();
+                                                try
+                                                {
+                                                    ModelFileKhiTuongS10Json modelFileS10Json = new ModelFileKhiTuongS10Json();
+                                                    modelFileS10Json.StationNo = item.DeviceId.Value.ToString();
+                                                   
+                                                    var dateCreateStr = item.DateCreate;                                                   
+                                                    try
+                                                    {
+                                                        if(dateCreateStr.HasValue)
+                                                        {
+                                                            var dateCreate = DateTime.Parse(dateCreateStr.Value.ToString()); // hoặc dùng DateTime.TryParse nếu cần kiểm tra
+                                                            modelFileS10Json.Datadate = double.Parse(dateCreate.ToString("yyyyMMddHHmmss"));
+                                                        }
+                                                        else
+                                                        {
+                                                            _loggingService.Info("item.DateCreate is null");
+                                                        }
+                                                       
+                                                    }
+                                                    catch(Exception ex)
+                                                    {
+                                                        
+                                                        _loggingService.Error(ex);
+                                                    }
+                                                                                                   
+                                                    modelFileS10Json.T2m = item.MTI;
+                                                    modelFileS10Json.T2mmax = item.MTX;
+                                                    modelFileS10Json.T2mmin = item.MTM;
+                                                    modelFileS10Json.Rh2m = item.MHU;
+                                                    modelFileS10Json.R2mmax = item.MHX;
+                                                    modelFileS10Json.R2mmin = item.MHM;
+                                                    modelFileS10Json.PS = item.MAV;
+                                                    modelFileS10Json.FF10m = item.MSM;
+                                                    modelFileS10Json.DD10m = item.MDM;
+                                                    modelFileS10Json.FxFx = item.MSS;
+                                                    modelFileS10Json.DxDx = item.MDS;
+                                                    modelFileS10Json.DtdateFxDx = item.MHR;
+                                                    modelFileS10Json.Rain10m = item.MRT;
+                                                    modelFileS10Json.Rain1h = item.MRH;
+                                                    modelFileS10Json.Rain19h = item.MRC;
+                                                    modelFileS10Json.Rain00h = item.MRB;
+                                                    modelFileS10Json.Battery = item.MVC;
+                                                    dataTramKhiTuong.Add(modelFileS10Json);
+                                                    dateTimeStr = modelFileS10Json.Datadate.ToString();
+                                                }
+                                                catch (Exception ex)
+                                                {                                                   
+                                                    _loggingService.Error(ex);
+                                                }
                                             }
                                     }
-                                }
 
+                                }
                             }
                             catch (Exception ex)
                             {

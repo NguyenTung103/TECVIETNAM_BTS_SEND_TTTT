@@ -1,9 +1,10 @@
-using BtsGetwayService;
+﻿using BtsGetwayService;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,13 +24,14 @@ namespace GetDataByMonth
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            Console.WriteLine("Enter year : ");
+            Console.OutputEncoding = Encoding.Unicode;
+            Console.WriteLine("Nhập năm: ");
             var yearStr = Console.ReadLine();
             int year = Int32.Parse(yearStr);
-            Console.WriteLine("Enter month : ");
+            Console.WriteLine("Nhập tháng: ");
             var monthStr = Console.ReadLine();
-            int month = Int32.Parse(monthStr);
-            Console.WriteLine("Enter day : ");
+            int month = Int32.Parse(monthStr);           
+            Console.WriteLine("Nhập ngày (nếu muốn lấy data cả tháng thì nhập 0): ");
             var dayStr = Console.ReadLine();
             int day = Int32.Parse(dayStr);
             Console.WriteLine("Type data (1: Report_S10, 2: Report_Normal)");
