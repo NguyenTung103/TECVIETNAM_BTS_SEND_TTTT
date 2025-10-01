@@ -366,8 +366,8 @@ namespace GetDataByMonth
                 {
                     for (int i = 0; i < 144; i++)
                     {
-                        var from = date.AddMinutes(i * 10);
-                        var to = date.AddMinutes((i + 1) * 10);
+                        var from = helperUlti.RoundDown(date.AddMinutes(i * 10), TimeSpan.FromMinutes(5));
+                        var to = helperUlti.RoundDown(date.AddMinutes((i + 1) * 10), TimeSpan.FromMinutes(5));
                         string appConfigPath = _appSetting.FolderLuuTruFile + @"\" + thang.ToString() + @"\";
                         _loggingService.Info("item.DateCreate is null");
                         foreach (var grp in lstGroup)
@@ -395,11 +395,11 @@ namespace GetDataByMonth
                                                 {
                                                     ModelFileKhiTuongS10Json modelFileS10Json = new ModelFileKhiTuongS10Json();
                                                     modelFileS10Json.StationNo = item.DeviceId.Value.ToString();
-                                                   
-                                                    var dateCreateStr = item.DateCreate;                                                   
+
+                                                    var dateCreateStr = item.DateCreate;
                                                     try
                                                     {
-                                                        if(dateCreateStr.HasValue)
+                                                        if (dateCreateStr.HasValue)
                                                         {
                                                             var dateCreate = DateTime.Parse(dateCreateStr.Value.ToString()); // hoặc dùng DateTime.TryParse nếu cần kiểm tra
                                                             modelFileS10Json.Datadate = double.Parse(dateCreate.ToString("yyyyMMddHHmmss"));
@@ -408,14 +408,14 @@ namespace GetDataByMonth
                                                         {
                                                             _loggingService.Info("item.DateCreate is null");
                                                         }
-                                                       
+
                                                     }
-                                                    catch(Exception ex)
+                                                    catch (Exception ex)
                                                     {
-                                                        
+
                                                         _loggingService.Error(ex);
                                                     }
-                                                                                                   
+
                                                     modelFileS10Json.T2m = item.MTI;
                                                     modelFileS10Json.T2mmax = item.MTX;
                                                     modelFileS10Json.T2mmin = item.MTM;
@@ -437,7 +437,7 @@ namespace GetDataByMonth
                                                     dateTimeStr = modelFileS10Json.Datadate.ToString();
                                                 }
                                                 catch (Exception ex)
-                                                {                                                   
+                                                {
                                                     _loggingService.Error(ex);
                                                 }
                                             }

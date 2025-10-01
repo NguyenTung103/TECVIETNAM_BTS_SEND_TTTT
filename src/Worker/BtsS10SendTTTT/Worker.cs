@@ -28,7 +28,7 @@ namespace BtsS10SendTTTT
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                DateTime from = _helperUlti.RoundDown(DateTime.Now, TimeSpan.FromMinutes(10));
+                DateTime from = _helperUlti.RoundDown(DateTime.Now, TimeSpan.FromMinutes(5));
                 DateTime to = from.AddMinutes(10);
                 _logger.LogInformation("Time start: {0}", DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
                 _logger.LogInformation("Time start send data: {0}", from.ToString("dd/MM/yyyy HH:mm:ss"));
