@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using StackExchange.Redis;
 using System.Configuration;
+using UdpService.Service;
 
 namespace UdpService
 {
@@ -64,6 +65,7 @@ namespace UdpService
                     services.AddTransient<Helper>();
                     services.AddSingleton<IZipHelper, GZipHelper>();
                     services.AddHostedService<Worker>();
+                    services.AddHostedService<CheckStatusDevice>();
                     services.AddLog4net();
 
                     services.AddSingleton<IReportS10Service, ReportS10Service>();
