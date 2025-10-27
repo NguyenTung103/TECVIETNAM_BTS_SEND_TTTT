@@ -1,4 +1,4 @@
-using bts.udpgateway;
+﻿using bts.udpgateway;
 using BtsGetwayService;
 using BtsGetwayService.Interface;
 using BtsGetwayService.Service;
@@ -7,13 +7,16 @@ using Core.Caching;
 using Core.Logging;
 using Core.MongoDb.Data.Interface;
 using Core.MSSQL.Responsitory.Interface;
+using Core.PushMessage;
 using Core.Setting;
 using ES_CapDien.AppCode;
 using Infrastructure.Udp;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 using System.Configuration;
+using Telegram.Bot;
 using UdpService.Service;
 
 namespace UdpService
@@ -31,6 +34,7 @@ namespace UdpService
                 {
                     services.Configure<Connections>(hostContext.Configuration.GetSection("Connections"));
                     services.Configure<AppSettingUDP>(hostContext.Configuration.GetSection("AppSettingUDP"));
+                    services.Configure<TelegramConfig>(hostContext.Configuration.GetSection("TelegramConfig"));
                     //services.Configure<WorkerRabbitmqConnection>(hostContext.Configuration.GetSection("WorkerRabbitmqConnection"));
                     //services.Configure<MasterRabbitmqConnection>(hostContext.Configuration.GetSection("MasterRabbitmqConnection"));
                     //services.AddSingleton<IMasterMessageQueueService, MasterRabbitmqService>();
@@ -64,17 +68,24 @@ namespace UdpService
 
                     services.AddTransient<Helper>();
                     services.AddSingleton<IZipHelper, GZipHelper>();
-                    services.AddHostedService<Worker>();
+                    services.AddHostedService<UdpService>();
                     services.AddHostedService<CheckStatusDevice>();
                     services.AddLog4net();
 
-                    services.AddSingleton<IReportS10Service, ReportS10Service>();
+                    services.AddTransient<IReportS10Service, ReportS10Service>();
                     services.AddTransient<IReportDailyService, ReportDailyService>();
                     services.AddTransient<IUdpService, Infrastructure.Udp.UdpService>();
                     services.AddTransient<IDataObservationService, DataObservationMongoService>();
                     services.AddTransient<IDataAlarmService, DataAlarmMongoService>();
 
-                    services.AddSingleton<IAsyncCacheService, RedisCacheService>();
+                    //services.AddSingleton<IAsyncCacheService, RedisCacheService>();
+                    // 2️⃣ Đăng ký ITelegramBotClient với BotToken từ config
+                    services.AddSingleton<ITelegramBotClient>(sp =>
+                    {
+                        var config = sp.GetRequiredService<IOptions<TelegramConfig>>().Value;
+                        return new TelegramBotClient(config.BotToken);
+                    });
+                    services.AddSingleton<IPushMessageService, TelegramMessageService>();                    
                 }).UseWindowsService();
     }
 }

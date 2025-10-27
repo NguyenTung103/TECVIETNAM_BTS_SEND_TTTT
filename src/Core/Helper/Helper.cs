@@ -1,7 +1,10 @@
 ﻿using Core.Model.Report.ReportDay;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace BtsGetwayService
@@ -191,6 +194,12 @@ namespace BtsGetwayService
                 Max = specialValue ?? defaultValue,
                 Sum = specialValue ?? defaultValue
             };
+        }
+        public static string GetLocalIpAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            var ipAddress = host.AddressList.Where(ip => ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork).Select(x => x.ToString());
+            return JsonSerializer.Serialize(ipAddress) ?? "Unknown IP";
         }
     }
 }

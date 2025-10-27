@@ -1,5 +1,6 @@
 ﻿using bts.udpgateway.integration;
 using Core.Logging;
+using Core.PushMessage;
 using Core.Setting;
 using Infrastructure.Udp;
 using Microsoft.Extensions.Hosting;
@@ -14,20 +15,22 @@ using System.Threading.Tasks;
 
 namespace UdpService
 {
-    public class Worker : BackgroundService
+    public class UdpService : BackgroundService
     {
-        private readonly ILogger<Worker> _logger;
+        private readonly ILogger<UdpService> _logger;
 
         private readonly IUdpService _udpService;
         static private UdpClient _udpClient = null;
         static private IPEndPoint _endpoint = null;
         private AppSettingUDP _appSettingUDP;
         private readonly ILoggingService _loggingService;
+        private readonly IPushMessageService _pushMessageService;
         //public readonly IWorkerMessageQueueService _workerMessageQueueService;
         //public readonly IMasterMessageQueueService _masterMessageQueueService;
-        public Worker(ILogger<Worker> logger,
+        public UdpService(ILogger<UdpService> logger,
             IUdpService udpService,
             ILoggingService loggingService,
+            IPushMessageService pushMessageService,
             //IWorkerMessageQueueService workerMessageQueueService,
             //IMasterMessageQueueService masterMessageQueueService,
             IOptions<AppSettingUDP> options
@@ -37,6 +40,7 @@ namespace UdpService
             _udpService = udpService;
             _appSettingUDP = options.Value;
             _loggingService = loggingService;
+            _pushMessageService = pushMessageService;
             //_workerMessageQueueService = workerMessageQueueService;
             //_masterMessageQueueService = masterMessageQueueService;
         }
@@ -51,6 +55,7 @@ namespace UdpService
         }
         public override Task StartAsync(CancellationToken cancellationToken)
         {
+            _pushMessageService.SendMessageAsync("UDP Service is started.");
             while (true)
             {
                 try

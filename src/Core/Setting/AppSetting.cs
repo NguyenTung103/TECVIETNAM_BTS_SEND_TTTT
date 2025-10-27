@@ -42,4 +42,9 @@ namespace Core.Setting
     {       
         public int CacheTime { get; set; }
     }
+    public class TelegramConfig
+    {
+        public string BotToken { get; set; }
+        public string ChatId { get; set; }
+    }
 }
