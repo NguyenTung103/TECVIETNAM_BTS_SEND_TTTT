@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ "production" ]
 jobs:
-  publish-tec-backup-14.177.239.150:
+  publish_tec_backup:
     runs-on: runner_tec_backup_14.177.239.150
     steps:
     - uses: actions/checkout@v3
