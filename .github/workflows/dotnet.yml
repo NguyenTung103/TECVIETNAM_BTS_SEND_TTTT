@@ -7,7 +7,7 @@ on:
     branches: [ "production" ]
 jobs:
   publish_tec_backup:
-    runs-on: [self-hosted]
+    runs-on: ["runner_tec_backup"]
     steps:
     - uses: actions/checkout@v4
     - name: Setup .NET
