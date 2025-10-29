@@ -13,4 +13,11 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4    
     - name: publish
-      run: powershell -f deploy-tec-backup-14.177.239.150.ps1 -buildLocation 'src\Worker\UdpService' -webRunFolder 'D:\TEC_SERVICES\BTS_UDP_SERVICE' -appSettingJson 'appsettings.json' -serviceName 'BTS_UDP_SERVICE' -applicationExe 'UdpService.exe'
+      working-directory: ${{ github.workspace }}
+      run: |
+        powershell -ExecutionPolicy Bypass -File .\deploy-tec-backup-14.177.239.150.ps1 `
+          -buildLocation 'src\Worker\UdpService' `
+          -webRunFolder 'D:\TEC_SERVICES\BTS_UDP_SERVICE' `
+          -appSettingJson 'appsettings.json' `
+          -serviceName 'BTS_UDP_SERVICE' `
+          -applicationExe 'UdpService.exe'
