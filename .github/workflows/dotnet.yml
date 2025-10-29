@@ -13,11 +13,4 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4    
     - name: publish
-      shell: powershell
-      run: |
-        .\deploy-tec-backup-14.177.239.150.ps1 `
-          -buildLocation 'src\Worker\UdpService' `
-          -webRunFolder 'D:\TEC_SERVICES\BTS_UDP_SERVICE' `
-          -appSettingJson 'appsettings.json' `
-          -serviceName 'BTS_UDP_SERVICE' `
-          -applicationExe 'UdpService.exe'
+      run: powershell -f deploy-tec-backup-14.177.239.150.ps1 -buildLocation 'src\Worker\UdpService' -webRunFolder 'D:\TEC_SERVICES\BTS_UDP_SERVICE' -appSettingJson 'appsettings.json' -serviceName 'BTS_UDP_SERVICE' -applicationExe 'UdpService.exe'

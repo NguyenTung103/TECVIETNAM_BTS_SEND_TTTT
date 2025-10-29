@@ -5,6 +5,7 @@ using BtsGetwayService.Interface;
 using BtsGetwayService.MongoDb.Entity;
 using Core.Logging;
 using Core.MSSQL.Responsitory.Interface;
+using Core.PushMessage;
 using Core.Setting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -39,6 +40,8 @@ namespace Infrastructure.Udp
 
         private readonly ILogger<UdpService> _logger;
         Helper helperUlti = new Helper();
+
+        private readonly IPushMessageService _pushMessageService;
         public UdpService(IOptions<AppSettingUDP> option,
             IGroupData groupData,
             ISiteData siteData,
@@ -51,7 +54,8 @@ namespace Infrastructure.Udp
             IReportDailyService reportDailyService,
             IDataObservationService dataObservationMongoService,
             IDataAlarmService dataAlarmService,
-            ILogger<UdpService> logger
+            ILogger<UdpService> logger,
+            IPushMessageService pushMessageService
            )
         {
             _appSetting = option.Value;
@@ -66,6 +70,7 @@ namespace Infrastructure.Udp
             _dataAlarmService = dataAlarmService;
             _reportS10Service = reportS10Service;
             _reportDailyService = reportDailyService;
+            _pushMessageService = pushMessageService;
             _logger = logger;
         }
         public async Task<ReturnInfo> Insert(string msg_content)
@@ -793,6 +798,7 @@ namespace Infrastructure.Udp
                 lst = _siteData.FindAll().ToList();
                 List<int> lstDeviceId = new List<int>();
                 List<int> lstDeviceIdUpdateActive = new List<int>();
+                List<string> mesagePushDisable = new List<string>();
                 foreach (var item in lst)
                 {
                     try
@@ -802,11 +808,12 @@ namespace Infrastructure.Udp
                         var lstData = _reportS10Service.GetByTime(start, end, item.DeviceId.Value, null, null, null);
                         if (lstData.Any())
                         {
-                            lstDeviceIdUpdateActive.Add(item.DeviceId.Value);
+                            lstDeviceIdUpdateActive.Add(item.DeviceId.Value);                            
                         }
                         else
                         {
                             lstDeviceId.Add(item.DeviceId.Value);
+                            mesagePushDisable.Add($"Thiết bị {item.DeviceId} - {item.Name} không có dữ liệu trong 20 phút qua.");
                         }
                     }
                     catch (Exception)
@@ -815,7 +822,8 @@ namespace Infrastructure.Udp
                 }
 
                 _siteData.UpdateStatusDisable(lstDeviceId);
-                _siteData.UpdateStatusActive(lstDeviceIdUpdateActive);
+                _siteData.UpdateStatusActive(lstDeviceIdUpdateActive);                                
+                await _pushMessageService.SendMessageAsync(string.Join("\n",mesagePushDisable));
                 _logger.LogInformation("update disable: "+ string.Join(",",lstDeviceId) + "\n update active: "+ string.Join(",", lstDeviceIdUpdateActive));
                 await Core.Helper.ApiSend.Call_PostDataAsync(null, _appSetting.UrlDomainWebQuanTrac, "Administrator/SuperAdmin/CacheManagerRemoveAll", null);
             }
