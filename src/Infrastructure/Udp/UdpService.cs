@@ -799,6 +799,7 @@ namespace Infrastructure.Udp
                 List<int> lstDeviceId = new List<int>();
                 List<int> lstDeviceIdUpdateActive = new List<int>();
                 List<string> mesagePushDisable = new List<string>();
+                int index = 1;
                 foreach (var item in lst)
                 {
                     try
@@ -808,30 +809,31 @@ namespace Infrastructure.Udp
                         var lstData = _reportS10Service.GetByTime(start, end, item.DeviceId.Value, null, null, null);
                         if (lstData.Any())
                         {
-                            lstDeviceIdUpdateActive.Add(item.DeviceId.Value);                            
+                            lstDeviceIdUpdateActive.Add(item.DeviceId.Value);
                         }
                         else
                         {
                             lstDeviceId.Add(item.DeviceId.Value);
-                            mesagePushDisable.Add($"Thiết bị {item.DeviceId} - {item.Name} không có dữ liệu trong 20 phút qua.");
+                            mesagePushDisable.Add($"{index} Thiết bị {item.DeviceId} - {item.Name} không có dữ liệu trong 20 phút qua.");
                         }
                     }
                     catch (Exception)
                     {
                     }
+                    index++;
                 }
 
                 _siteData.UpdateStatusDisable(lstDeviceId);
-                _siteData.UpdateStatusActive(lstDeviceIdUpdateActive);                                
-                await _pushMessageService.SendMessageAsync(string.Join("\n",mesagePushDisable));
-                _logger.LogInformation("update disable: "+ string.Join(",",lstDeviceId) + "\n update active: "+ string.Join(",", lstDeviceIdUpdateActive));
+                _siteData.UpdateStatusActive(lstDeviceIdUpdateActive);
+                await _pushMessageService.SendMessageAsync(string.Join("\n", mesagePushDisable));
+                _logger.LogInformation("update disable: " + string.Join(",", lstDeviceId) + "\n update active: " + string.Join(",", lstDeviceIdUpdateActive));
                 await Core.Helper.ApiSend.Call_PostDataAsync(null, _appSetting.UrlDomainWebQuanTrac, "Administrator/SuperAdmin/CacheManagerRemoveAll", null);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex, "Lỗi cập nhật");
             }
-            
+
         }
     }
 }

@@ -24,18 +24,15 @@ namespace CheckDeviceService
     {
         private readonly ILogger<Worker> _logger;
 
-        private readonly IUdpService _udpService;
-        private AppSettingUDP _appSettingUDP;
+        private readonly IUdpService _udpService;        
         private readonly IPushMessageService _pushMessageService;
         public Worker(ILogger<Worker> logger,
             IUdpService udpService,
-            IPushMessageService pushMessageService,
-            IOptions<AppSettingUDP> options
+            IPushMessageService pushMessageService
             )
         {
             _logger = logger;
-            _udpService = udpService;
-            _appSettingUDP = options.Value;
+            _udpService = udpService;            
             _pushMessageService = pushMessageService;
         }
 
@@ -50,7 +47,7 @@ namespace CheckDeviceService
         }
         public override async Task StartAsync(CancellationToken cancellationToken)
         {
-            _pushMessageService.SendMessageAsync("UDP Service is started.");
+            await _pushMessageService.SendMessageAsync("Check active device service is started.");
             while (!cancellationToken.IsCancellationRequested)
             {
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
