@@ -1,23 +1,26 @@
 using bts.udpgateway;
+using BtsGetwayService;
 using BtsGetwayService.Interface;
 using BtsGetwayService.Service;
-using BtsGetwayService;
+using CheckDeviceService;
+using Core;
 using Core.Interfaces;
 using Core.Logging;
 using Core.MessageQueue;
 using Core.MongoDb.Data.Interface;
 using Core.MSSQL.Responsitory.Interface;
+using Core.PushMessage;
 using Core.Setting;
-using Core;
 using ES_CapDien.AppCode;
 using Infrastructure.Udp;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CheckDeviceService;
+using Telegram.Bot;
 
 namespace CheckActiveDevice
 {
@@ -37,6 +40,7 @@ namespace CheckActiveDevice
                    services.Configure<AppSettingUDP>(hostContext.Configuration.GetSection("AppSettingUDP"));
                    services.Configure<WorkerRabbitmqConnection>(hostContext.Configuration.GetSection("WorkerRabbitmqConnection"));
                    services.Configure<MasterRabbitmqConnection>(hostContext.Configuration.GetSection("MasterRabbitmqConnection"));
+                   services.Configure<TelegramConfig>(hostContext.Configuration.GetSection("TelegramConfig"));
                    services.AddSingleton<IMasterMessageQueueService, MasterRabbitmqService>();
                    services.AddSingleton<IWorkerMessageQueueService, WorkerRabbitmqService>();
                    services.AddSingleton<IGroupData, GroupData>();
@@ -69,6 +73,12 @@ namespace CheckActiveDevice
                    services.AddTransient<IUdpService, Infrastructure.Udp.UdpService>();
                    services.AddTransient<IDataObservationService, DataObservationMongoService>();
                    services.AddTransient<IDataAlarmService, DataAlarmMongoService>();
+                   services.AddSingleton<ITelegramBotClient>(sp =>
+                   {
+                       var config = sp.GetRequiredService<IOptions<TelegramConfig>>().Value;
+                       return new TelegramBotClient(config.BotToken);
+                   });
+                   services.AddSingleton<IPushMessageService, TelegramMessageService>();
                }).UseWindowsService();
     }
 }
