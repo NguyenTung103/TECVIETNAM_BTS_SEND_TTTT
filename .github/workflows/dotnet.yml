@@ -5,6 +5,8 @@ on:
     branches: [ "production" ]
   pull_request:
     branches: [ "production" ]
+  workflow_dispatch:
+  
 jobs:
   publish_tec_backup:
     runs-on: tec_backup

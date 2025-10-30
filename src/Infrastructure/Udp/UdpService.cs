@@ -814,13 +814,13 @@ namespace Infrastructure.Udp
                         else
                         {
                             lstDeviceId.Add(item.DeviceId.Value);
-                            mesagePushDisable.Add($"{index} Thiết bị {item.DeviceId} - {item.Name} không có dữ liệu trong 20 phút qua.");
+                            mesagePushDisable.Add($"{index}. Thiết bị {item.DeviceId} - {item.Name} không có dữ liệu trong 20 phút qua.");
+                            index++;
                         }
                     }
                     catch (Exception)
                     {
-                    }
-                    index++;
+                    }                    
                 }
 
                 _siteData.UpdateStatusDisable(lstDeviceId);
