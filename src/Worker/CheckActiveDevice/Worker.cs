@@ -1,21 +1,22 @@
 using bts.udpgateway.integration;
 using BtsGetwayService;
+using Core.Entities;
 using Core.Interfaces;
+using Core.PushMessage;
+using Core.Setting;
 using Infrastructure.Udp;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Linq;
-using System.Net.Sockets;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Core.Setting;
-using Microsoft.Extensions.Options;
-using Core.Entities;
 
 namespace CheckDeviceService
 {
@@ -25,14 +26,17 @@ namespace CheckDeviceService
 
         private readonly IUdpService _udpService;
         private AppSettingUDP _appSettingUDP;
+        private readonly IPushMessageService _pushMessageService;
         public Worker(ILogger<Worker> logger,
             IUdpService udpService,
+            IPushMessageService pushMessageService,
             IOptions<AppSettingUDP> options
             )
         {
             _logger = logger;
             _udpService = udpService;
             _appSettingUDP = options.Value;
+            _pushMessageService = pushMessageService;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -46,6 +50,7 @@ namespace CheckDeviceService
         }
         public override async Task StartAsync(CancellationToken cancellationToken)
         {
+            _pushMessageService.SendMessageAsync("UDP Service is started.");
             while (!cancellationToken.IsCancellationRequested)
             {
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);

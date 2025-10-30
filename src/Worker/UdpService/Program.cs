@@ -68,8 +68,7 @@ namespace UdpService
 
                     services.AddTransient<Helper>();
                     services.AddSingleton<IZipHelper, GZipHelper>();
-                    services.AddHostedService<UdpService>();
-                    services.AddHostedService<CheckStatusDevice>();
+                    services.AddHostedService<UdpService>();                    
                     services.AddLog4net();
 
                     services.AddTransient<IReportS10Service, ReportS10Service>();
