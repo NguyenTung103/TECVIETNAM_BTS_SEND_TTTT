@@ -15,4 +15,4 @@ jobs:
     - name: publish
       run: |
         powershell -f deploy-tec-backup-14.177.239.150.ps1 -buildLocation 'src\Worker\UdpService' -webRunFolder 'D:\TEC_SERVICES\BTS_UDP_SERVICE' -appSettingJson 'appsettings.ProductionTecBackup.json' -serviceName 'BTS_UDP_SERVICE' -applicationExe 'UdpService.exe'
-        powershell -f deploy-tec-backup-14.177.239.150.ps1 -buildLocation 'src\Worker\CheckStatusDevice' -webRunFolder 'D:\TEC_SERVICES\BTS_CHECK_STATUS' -appSettingJson 'appsettings.ProductionTecBackup.json' -serviceName 'BTS_CHECK_STATUS' -applicationExe 'CheckStatusDevice.exe'
+        powershell -f deploy-tec-backup-14.177.239.150.ps1 -buildLocation 'src\Worker\CheckActiveDevice' -webRunFolder 'D:\TEC_SERVICES\BTS_CHECK_STATUS' -appSettingJson 'appsettings.ProductionTecBackup.json' -serviceName 'BTS_CHECK_STATUS_DEVICE' -applicationExe 'CheckActiveDevice.exe'
