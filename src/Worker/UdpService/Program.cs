@@ -17,7 +17,6 @@ using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 using System.Configuration;
 using Telegram.Bot;
-using UdpService.Service;
 
 namespace UdpService
 {
