@@ -35,7 +35,8 @@ namespace bts.udpgateway
 
         public Nullable<int> UpdateBy { get; set; }
 
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; }        
+        public bool? IsAlarm { get; set; }        
 
         public Nullable<int> DeviceId { get; set; }
         public Nullable<int> TypeSiteId { get; set; }
