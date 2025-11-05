@@ -811,7 +811,7 @@ namespace Infrastructure.Udp
                         if (lstData.Any())
                         {
                             lstDeviceIdUpdateActive.Add(item.DeviceId.Value);
-                            if (item.IsAlarm == false)
+                            if (item.IsAlarm == true)
                             {
                                 mesagePushActive.Add($"{indexActive}. 🟢 Thiết bị {item.DeviceId} - {item.Name} đã online trở lại.");
                                 indexActive++;

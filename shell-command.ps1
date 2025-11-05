@@ -36,12 +36,10 @@ Function DeployServices($buildLocation, $webRunFolder, $appSettingJson, $service
             } else {
                 Write-Host "Sao chep khong thanh cong."
             }
-        } elseif ($service.Status -eq 'Running') {
-            taskkill /F /IM $applicationExe
-            Write-Host "Dich vu dang chay, dung dich vu va cho..."
-            Stop-Service -Name $serviceName
-            Start-Sleep -Seconds 35
-
+        } elseif ($service.Status -eq 'Running') {            
+            Write-Host "Dich vu dang chay, dung dich vu va cho..."            
+            Stop-Service -Name $serviceName -Force
+            Start-Sleep -Seconds 35            
             echo "Set Location $buildLocation"
 			Set-Location $buildLocation
 			echo "restore project"
