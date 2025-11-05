@@ -35,7 +35,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckActiveDevice", "src\Wo
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "document", "document", "{0263090B-540E-43E6-BCDC-A95B14991030}"
 	ProjectSection(SolutionItems) = preProject
+		deploy-tec-backup-14.177.239.150.ps1 = deploy-tec-backup-14.177.239.150.ps1
+		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
 		C:\Users\nguye\Downloads\lenh_restart_cac_dich_vu_cho_udp.bat = C:\Users\nguye\Downloads\lenh_restart_cac_dich_vu_cho_udp.bat
+		shell-command.ps1 = shell-command.ps1
 		C:\Users\nguye\Downloads\tao_service_udp.bat = C:\Users\nguye\Downloads\tao_service_udp.bat
 	EndProjectSection
 EndProject
