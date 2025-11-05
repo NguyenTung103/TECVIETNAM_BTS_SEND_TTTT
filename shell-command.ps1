@@ -38,7 +38,20 @@ Function DeployServices($buildLocation, $webRunFolder, $appSettingJson, $service
             }
         } elseif ($service.Status -eq 'Running') {            
             Write-Host "Dich vu dang chay, dung dich vu va cho..."            
-            Stop-Service -Name $serviceName -Force
+           try {
+                Stop-Service -Name $applicationExe -Force -ErrorAction Stop
+                Write-Host "Đã dừng dịch vụ $applicationExe thành công."
+            }
+            catch {
+                Write-Host "Không thể dừng dịch vụ $applicationExe. Thử kill tiến trình..."
+                $svc = Get-WmiObject Win32_Service -Filter "Name='$applicationExe'"
+                if ($svc.ProcessId -ne 0) {
+                    Stop-Process -Id $svc.ProcessId -Force
+                    Write-Host "Đã kill tiến trình PID $($svc.ProcessId) của dịch vụ $applicationExe."
+                } else {
+                    Write-Host "Dịch vụ không có tiến trình đang chạy."
+                }
+            }
             Start-Sleep -Seconds 35            
             echo "Set Location $buildLocation"
 			Set-Location $buildLocation
