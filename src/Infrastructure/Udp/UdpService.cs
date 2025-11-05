@@ -813,7 +813,7 @@ namespace Infrastructure.Udp
                             lstDeviceIdUpdateActive.Add(item.DeviceId.Value);
                             if (item.IsAlarm == false)
                             {
-                                mesagePushActive.Add($"{indexActive}.🟢 Thiết bị {item.DeviceId} - {item.Name} đã online trở lại.");
+                                mesagePushActive.Add($"{indexActive}. 🟢 Thiết bị {item.DeviceId} - {item.Name} đã online trở lại.");
                                 indexActive++;
                             }
                         }
@@ -822,7 +822,7 @@ namespace Infrastructure.Udp
                             lstDeviceId.Add(item.DeviceId.Value);
                             if (item.IsAlarm != true)
                             {
-                                mesagePushDisable.Add($"{indexDisable}.🔴 Thiết bị {item.DeviceId} - {item.Name} không có dữ liệu trong 20 phút qua.");
+                                mesagePushDisable.Add($"{indexDisable}. 🔴 Thiết bị {item.DeviceId} - {item.Name} không có dữ liệu trong 20 phút qua.");
                                 indexDisable++;
                             }
                         }
