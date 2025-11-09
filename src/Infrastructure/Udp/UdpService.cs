@@ -801,6 +801,7 @@ namespace Infrastructure.Udp
                 List<string> mesagePushDisable = new List<string>();
                 List<string> mesagePushActive = new List<string>();
                 int indexDisable = 1, indexActive = 1;
+                var listMessage = new List<string>();
                 foreach (var item in lst)
                 {
                     try
@@ -813,7 +814,7 @@ namespace Infrastructure.Udp
                             lstDeviceIdUpdateActive.Add(item.DeviceId.Value);
                             if (item.IsAlarm == true)
                             {
-                                mesagePushActive.Add($"{indexActive}. 🟢 Thiết bị {item.DeviceId} - {item.Name} đã online trở lại.");
+                                listMessage.Add($"{indexActive}. 🟢 Thiết bị {item.DeviceId} - {item.Name} đã online trở lại.");
                                 indexActive++;
                             }
                         }
@@ -822,7 +823,7 @@ namespace Infrastructure.Udp
                             lstDeviceId.Add(item.DeviceId.Value);
                             if (item.IsAlarm != true)
                             {
-                                mesagePushDisable.Add($"{indexDisable}. 🔴 Thiết bị {item.DeviceId} - {item.Name} không có dữ liệu trong 20 phút qua.");
+                                listMessage.Add($"{indexDisable}. 🔴 Thiết bị {item.DeviceId} - {item.Name} không có dữ liệu trong 20 phút qua.");
                                 indexDisable++;
                             }
                         }
@@ -833,10 +834,10 @@ namespace Infrastructure.Udp
                 }
 
                 _siteData.UpdateStatusDisable(lstDeviceId);
-                _siteData.UpdateStatusActive(lstDeviceIdUpdateActive);
-                if (mesagePushDisable.Any())
+                _siteData.UpdateStatusActive(lstDeviceIdUpdateActive);                             
+                if (listMessage.Any())
                 {
-                    await _pushMessageService.SendMessageAsync(string.Join("\n", mesagePushDisable));
+                    await _pushMessageService.SendMessageAsync(string.Join("\n", listMessage));
                 }
                 _logger.LogInformation("update disable: " + string.Join(",", lstDeviceId) + "\n update active: " + string.Join(",", lstDeviceIdUpdateActive));
                 await Core.Helper.ApiSend.Call_PostDataAsync(null, _appSetting.UrlDomainWebQuanTrac, "Administrator/SuperAdmin/CacheManagerRemoveAll", null);
